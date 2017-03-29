@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Bolomajster</title>
+	<audio id="errorSound" src="/error.mp3" preload="auto"></audio>
+	
+	<link rel="icon" type="image/png" href="/favicon.png">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/css/bootstrap-slider.min.css" crossorigin="anonymous">
+	<link rel="stylesheet" href="/bolomajster.css" crossorigin="anonymous">
+
+	<script src="https://code.jquery.com/jquery-3.2.0.js" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/bootstrap-slider.min.js" crossorigin="anonymous"></script>
+	<script src="/bolomajster.js"></script>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="navbar navbar-inverse">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="javascript:window.location.reload(true)">Bolomajster</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="http://monitor.shajen.pl/plot" target="_blank">Plot</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div id="error" class="alert alert-danger" style="display:none">
+			<strong>UWAGA! Błąd połączenia z Bolomajstrem!</strong> Najlepiej odśwież stronę. Jeśli błąd wystąpi ponownie, upewnij się, że jesteś w zasięgu sieci WiFi i poprawnie podłączyłeś Bolomajstra do prądu i WiFi.
+		</div>
+		<div class="row">
+			<div class="col-xs-6">
+				<h4><span class="label label-primary">Przerwy temperaturowe</span></h4>
+				<div class="well well-sm">
+					<p>
+						<div class="clearfix">
+							<div class="pull-left">
+								<button id="editBreaks" type="button" class="btn btn-primary">Edytuj</button>
+								<button id="saveBreaks" type="button" class="btn btn-primary" disabled>Zapisz</button>
+								<button id="addBreakButton" type="button" class="btn btn-success" disabled>Dodaj</button>
+								<button id="removeBreakButton" type="button" class="btn btn-danger" disabled>Usuń</button>
+							</div>
+							<div class="pull-right">
+								<button id="startBrew" type="button" class="btn btn-success">Start</button>
+								<button id="stopBrew" type="button" class="btn btn-danger" disabled>Stop</button>
+							</div>
+						</div>
+					</p>
+					<table class="table table-striped table-bordered">
+						<thead>
+							<tr>
+								<th scope="row">#</th>
+								<th>Czas trwania (min)</th>
+								<th>Temperatura (&#x2103;)</th>
+								<th>Status</th>
+							</tr>
+						<thead>
+						<tbody id="breakBody">
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div class="col-xs-3">
+				<h4><span class="label label-primary">Pompa</span></h4>
+				<div class="well well-sm">
+					<input id="pumpInput" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
+					<h4>Moc pompy: <span id="pumpValue">0</span>%</h4>
+				</div>
+			</div>
+			
+			<div class="col-xs-3">
+				<h4><span class="label label-primary">Wentylator</span></h4>
+				<div class="well well-sm">
+					<input id="fanInput" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
+					<h4>Moc wentylatora: <span id="fanValue">0</span>%</h4>
+				</div>
+			</div>
+			
+			<div class="col-xs-3">
+				<h4><span class="label label-primary">Utrzymywana temperatura</span></h4>
+				<div class="well well-sm">
+					<input id="expectedTemperatureInput" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
+					<h4>Temperatura: <span id="expectedTemperatureValue">0</span>&#x2103;</h4>
+				</div>
+			</div>
+			
+			<div class="col-xs-3">
+				<h4><span class="label label-primary">Ustawienia</span></h4>
+				<div class="well well-sm">
+					<div class="checkbox">
+						<label>
+							<h4><input id="soundCheckbox" type="checkbox" checked> Sygnały dźwiękowe</h4>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-3">
+				<h4><span class="label label-danger">Faza</span></h4>
+				<div class="well well-sm">
+					<div class="radio">
+						<h4>
+							<label><input type="radio" name="optionsRadios" id="closePhase">zawory zamknięte</label>
+						</h4>
+					</div>
+					<div class="radio">
+						<h4>
+							<label><input type="radio" name="optionsRadios" id="openPhase">zawory otwarte</label>
+						</h4>
+					</div>
+					<div class="radio">
+						<h4>
+							<label><input type="radio" name="optionsRadios" id="cleaningPhase">czyszczenie</label>
+						</h4>
+					</div>
+					<div class="radio">
+						<h4>
+							<label><input type="radio" name="optionsRadios" id="mashingPhase">zacieranie</label>
+						</h4>
+					</div>
+					<div class="radio">
+						<h4>
+							<label><input type="radio" name="optionsRadios" id="filteringTurnAroundPhase">filtracja - zawracanie</label>
+						</h4>
+					</div>
+					<div class="radio">
+						<h4>
+							<label><input type="radio" name="optionsRadios" id="filteringAddWaterPhase">filtracja - dolewanie wody</label>
+						</h4>
+					</div>
+					<div class="radio">
+						<h4>
+							<label><input type="radio" name="optionsRadios" id="filteringPlewingPhase">filtracja - wysładzanie</label>
+						</h4>
+					</div>
+					<div class="radio">
+						<h4>
+							<label><input type="radio" name="optionsRadios" id="coolingPhase">chłodzenie/zlewanie</label>
+						</h4>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xs-5">
+				<h4><span class="label label-danger">Temperatura</span></h4>
+				<div class="well well-sm">
+					<h4>Średnia temperatura brzeczki: <span>0</span>&#x2103;</h4>
+					<h4>Czujniki w brzeczce: <span>0</span>&#x2103;, <span>0</span>&#x2103;, <span>0</span>&#x2103;, <span>0</span>&#x2103;</h4>
+					<h4>Temperatura wewnętrzna urządzenia: <span>0</span>&#x2103;</h4>
+				</div>
+			</div>
+		
+			<div class="col-xs-4">
+				<h4><span class="label label-warning">Informacje dodatkowe</span></h4>
+				<div class="well well-sm">
+					<h4>Moc grzałki: <span id='heater'>0</span> %</h4>
+					<h4>Wolna pamięć: <span id='heap'>0</span> kB</h4>
+					<h4>Czas od uruchomienia: <span id='uptime'>0</span> s</h4>
+					<h4>Napięcie: <span id='voltage'>0</span> mV</h4>
+					<h4>Sieć WiFi: <span id='wifi_ssid'></span></h4>
+					<h4>Sygnał WiFi: <span id='wifi_signal'>0</span> dB</h4>
+					<h4>Adres MAC: <span id='wifi_mac'></span></h4>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="page-footer">
+		<div class="container">
+			<footer>
+				<hr />
+				<p>by Shajen (2017)</p>
+			</footer>
+		</div>
+	</div>
+</body>
+</html>
