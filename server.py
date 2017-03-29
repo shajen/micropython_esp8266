@@ -20,6 +20,7 @@ class Server:
 
     def run(self):
         s = socket.socket()
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(self.addr)
         s.listen(1)
         print('listening on', self.addr)

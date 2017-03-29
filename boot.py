@@ -1,7 +1,16 @@
 import webrepl
 import network
 
-def do_connect():
+def detectSoftReboot():
+	try:
+		import utime
+		if utime.ticks_ms() >= 1000:
+			import machine
+			machine.reset()
+	except:
+		pass
+
+def doConnect():
 	sta_if = network.WLAN(network.STA_IF)
 	ap_if = network.WLAN(network.AP_IF)
 	if ap_if.active():
@@ -15,6 +24,7 @@ def do_connect():
 		print('Connected')
 	print('Network configuration:', sta_if.ifconfig())
 
+detectSoftReboot()
 print('Bolomajster - micropython')
-do_connect()
+doConnect()
 webrepl.start()
