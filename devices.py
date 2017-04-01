@@ -1,10 +1,14 @@
 from machine import Pin, PWM
+import onewire
+import ds18x20
+import utime as time
 
 PWM_CLOCK = 1000
 DALLAS_PIN = 0
 PUMP_PIN = 2
 HEATER_PIN = 14
 FAN_PIN = 12
+INTERNAL_DALLAS_ID = '28eea34625160109'
 
 class Devices:
     def __init__(self):
@@ -12,6 +16,10 @@ class Devices:
         self.heaterPwm = PWM(Pin(HEATER_PIN), freq=PWM_CLOCK, duty=0)
         self.fanPwm = PWM(Pin(FAN_PIN), freq=PWM_CLOCK, duty=0)
         self.sound = False
+        self.oneWire = onewire.OneWire(Pin(DALLAS_PIN))
+        self.dallas = ds18x20.DS18X20(self.oneWire)
+        self.externalTemperatures = []
+        self.internalTemperature = 0.0
 
     @staticmethod
     def calculateDutyToPercent(value):
@@ -44,3 +52,26 @@ class Devices:
 
     def setSound(self, value):
         self.sound = value
+
+    def getInternalTemperature(self):
+        return self.internalTemperature
+
+    def getExternalTemperatures(self):
+        return self.externalTemperatures
+
+    def getAverageExternalTemperature(self):
+        return sum(self.externalTemperatures)/len(self.externalTemperatures)
+
+    def update(self, timer):
+        self.externalTemperatures = []
+        roms = self.dallas.scan()
+        self.dallas.convert_temp()
+        for rom in roms:
+            id = "".join("{:02x}".format(c) for c in rom)
+            temperature = self.dallas.read_temp(rom)
+            if id == INTERNAL_DALLAS_ID:
+                self.internalTemperature = temperature
+            else:
+                self.externalTemperatures.append(temperature)
+            # print('%s %.2f' % (id, temperature))
+        # print('')

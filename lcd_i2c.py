@@ -48,6 +48,9 @@ class LcdI2C():
         self.i2c.writeto(self.address, bytearray([(bits & ~ENABLE)]))
         time.sleep(E_DELAY)
 
+    def clear(self):
+        self.lcd_byte(0x01,LCD_CMD)
+
     def write(self, message, line):
         self.lcd_byte(line, LCD_CMD)
         for c in message:
