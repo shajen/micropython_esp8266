@@ -115,10 +115,12 @@ class Server:
             return None
 
     def apiStatus(self):
+        gc.collect()
+        free = gc.mem_free()
         data = {}
 
         data['NODE'] = {}
-        data['NODE']['HEAP'] = gc.mem_free()
+        data['NODE']['HEAP'] = free
         data['NODE']['UPTIME'] = int(time.ticks_ms() / 1000)
         data['NODE']['VOLTAGE'] = 0
         data['NODE']['WIFI'] = {}

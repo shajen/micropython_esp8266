@@ -50,5 +50,7 @@ class LcdI2C():
 
     def write(self, message, line):
         self.lcd_byte(line, LCD_CMD)
-        for i in range(len(message)):
-            self.lcd_byte(ord(message[i]),LCD_CHR)
+        for c in message:
+            self.lcd_byte(ord(c),LCD_CHR)
+        for i in range(len(message), LCD_WIDTH):
+            self.lcd_byte(ord(' '),LCD_CHR)
