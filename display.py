@@ -17,4 +17,4 @@ class Display():
         gc.collect()
         free = gc.mem_free()
         self.lcd.write('Uptime: %d s' % uptime, lcd_i2c.LCD_LINE_1)
-        self.lcd.write('Free: %d' % free, lcd_i2c.LCD_LINE_2)
+        self.lcd.write('Free: %d kB' % free, lcd_i2c.LCD_LINE_2)
