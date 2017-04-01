@@ -1,5 +1,6 @@
 import webrepl
 import network
+import machine
 
 def detectSoftReboot():
 	try:
@@ -26,5 +27,6 @@ def doConnect():
 
 detectSoftReboot()
 print('Bolomajster - micropython')
+print('Reset cause %d' % machine.reset_cause())
 doConnect()
 webrepl.start()

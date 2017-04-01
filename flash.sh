@@ -13,5 +13,7 @@
 micropython boot.py
 micropython main.py
 micropython server.py
+micropython devices.py
+micropython brew.py
 micropython index.html
 micropython webrepl_cfg.py
