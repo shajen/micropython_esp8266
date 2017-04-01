@@ -24,14 +24,11 @@ class Brew:
     def setBreaks(self, breaks):
         if not self.started:
             self.breaks = []
-            print(breaks)
-            print(len(breaks))
             for v in breaks:
                 b = {}
                 b['STATE'] = 'STOP'
                 b['TIME'] = v['TIME']
                 b['TEMP'] = v['TEMP']
-                print(b)
                 self.breaks.append(b)
 
     def getBreaks(self):
