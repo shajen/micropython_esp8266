@@ -2,6 +2,7 @@ from machine import Pin, PWM
 import onewire
 import ds18x20
 import utime as time
+import socket
 
 PWM_CLOCK = 1000
 DALLAS_PIN = 0 #D3
@@ -9,6 +10,7 @@ PUMP_PIN = 13 #D7
 HEATER_PIN = 14 #D5
 FAN_PIN = 12 #D6
 INTERNAL_DALLAS_ID = '28eea34625160109'
+UPLOADER_KEY = 'YOUR_API_KEY'
 
 class Devices:
     def __init__(self):
@@ -20,6 +22,7 @@ class Devices:
         self.dallas = ds18x20.DS18X20(self.oneWire)
         self.externalTemperatures = []
         self.internalTemperature = 0.0
+        self.temperaturesWithId = []
 
     @staticmethod
     def calculateDutyToPercent(value):
@@ -67,15 +70,31 @@ class Devices:
     def update(self, timer):
         self.internalTemperature = 0.0
         self.externalTemperatures = []
+        self.temperaturesWithId = []
         roms = self.dallas.scan()
         self.dallas.convert_temp()
         for rom in roms:
             id = "".join("{:02x}".format(c) for c in rom)
             temperature = self.dallas.read_temp(rom)
             if temperature != 85.0:
+                self.temperaturesWithId.append((id, temperature))
                 if id == INTERNAL_DALLAS_ID:
                     self.internalTemperature = temperature
                 else:
                     self.externalTemperatures.append(temperature)
                 # print('%s %.2f' % (id, temperature))
         # print('')
+
+    def upload(self, timer):
+        for (serial, temperature) in self.temperaturesWithId:
+            url = "http://monitor.shajen.pl/api/temp/add?serial=%s&temperature=%.2f&key=%s" % (serial, temperature, UPLOADER_KEY)
+            Devices.httpGet(url)
+
+    @staticmethod
+    def httpGet(url):
+        _, _, host, path = url.split('/', 3)
+        addr = socket.getaddrinfo(host, 80)[0][-1]
+        s = socket.socket()
+        s.connect(addr)
+        s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
+        s.close()
