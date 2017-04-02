@@ -1,6 +1,7 @@
 $(document).ready(onReady);
 
 var MAX_BREAKS = 10;
+var DECIMALS = 2;
 var breaks = 0;
 
 function onReady() {
@@ -9,7 +10,7 @@ function onReady() {
 	doSlider();
 	doPhases();
 	updateStatus(true);
-	
+
 	$("#soundCheckbox").click(function() {
 		if (this.checked) {
 			myJSON("/api/settings?sound=play");
@@ -18,7 +19,7 @@ function onReady() {
 			myJSON("/api/settings?sound=mute");
 		}
 	});
-} 
+}
 
 function doPhases(mode) {
 	function connectRadioButton(name, url) {
@@ -55,14 +56,19 @@ function updateStatus(setNext) {
 			$("#wifi_ssid").text(json.DATA.NODE.WIFI.SSID);
 			$("#wifi_signal").text(json.DATA.NODE.WIFI.SIGNAL);
 			$("#wifi_mac").text(json.DATA.NODE.WIFI.MAC);
-			
+
 			$("#expectedTemperatureValue").text(json.DATA.BREW.TEMP);
 			$("#expectedTemperatureInput").slider('setValue', json.DATA.BREW.TEMP, true);
 			$("#pumpValue").text(json.DATA.DEVICES.PUMP);
 			$("#pumpInput").slider('setValue', json.DATA.DEVICES.PUMP, true);
 			$("#fanValue").text(json.DATA.DEVICES.FAN);
 			$("#fanInput").slider('setValue', json.DATA.DEVICES.FAN, true);
-			
+
+			externalTemperatures = json.DATA.TEMP.EXTERNAL.map(function (t) { return t.toFixed(DECIMALS).toString() + "&#x2103;"; })
+			$("#averageExternalTemperature").text(json.DATA.TEMP.AVERAGE_EXTERNAL.toFixed(DECIMALS));
+			$("#externalTemperatures").html(externalTemperatures.join(', '));
+			$("#internalTemperature").text(json.DATA.TEMP.INTERNAL.toFixed(DECIMALS));
+
 			isStarted = json.DATA.BREW.STARTED;
 			$("#editBreaks").attr("disabled", isStarted || !$("#saveBreaks").is(":disabled"));
 			$("#startBrew").attr("disabled", isStarted || !$("#saveBreaks").is(":disabled"));
@@ -109,11 +115,11 @@ function doBreaksButtons() {
 		$("#breakTemp" + i.toString()).prop("disabled", true);
 		$("#breakTime" + i.toString()).prop("disabled", true);
 	}
-	
+
 	for (i=breaks+1; i<=MAX_BREAKS; ++i) {
 		$("#breakRow" + i.toString()).hide();
 	}
-	
+
 	$("#startBrew").click(function() {
 		myJSON('/api/brew?action=start');
 		updateStatus();
@@ -123,7 +129,7 @@ function doBreaksButtons() {
 		myJSON('/api/brew?action=stop');
 		updateStatus();
 	});
-	
+
 	$("#editBreaks").click(function() {
 		$("#editBreaks").attr("disabled", true);
 		$("#saveBreaks").attr("disabled", false);
@@ -153,7 +159,7 @@ function doBreaksButtons() {
 		}
 		myJSON("/api/brew?breaks=" + JSON.stringify(b))
 	});
-	
+
 	$("#addBreakButton").click(function() {
 		$("#removeBreakButton").attr("disabled", false);
 		breaks = Math.min(breaks + 1, MAX_BREAKS);
@@ -162,7 +168,7 @@ function doBreaksButtons() {
 		}
 		$("#breakRow" + breaks.toString()).fadeIn('fast');
 	});
-	
+
 	$("#removeBreakButton").click(function() {
 		$("#addBreakButton").attr("disabled", false);
 		$("#breakRow" + breaks.toString()).fadeOut('fast');
@@ -181,7 +187,7 @@ function doSlider() {
 	$("#expectedTemperatureInput").on("slideStop", function(evt) {
 		myJSON('/api/brew?temp=' + evt.value);
 	});
-	
+
 	$("#pumpInput").slider();
 	$("#pumpInput").on("slide", function(slideEvt) {
 		$("#pumpValue").text(slideEvt.value);

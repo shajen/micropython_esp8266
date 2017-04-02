@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>Bolomajster</title>
 	<audio id="errorSound" src="/error.mp3" preload="auto"></audio>
-	
+
 	<link rel="icon" type="image/png" href="/favicon.png">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" crossorigin="anonymous">
@@ -80,7 +80,7 @@
 					<h4>Moc pompy: <span id="pumpValue">0</span>%</h4>
 				</div>
 			</div>
-			
+
 			<div class="col-xs-3">
 				<h4><span class="label label-primary">Wentylator</span></h4>
 				<div class="well well-sm">
@@ -88,7 +88,7 @@
 					<h4>Moc wentylatora: <span id="fanValue">0</span>%</h4>
 				</div>
 			</div>
-			
+
 			<div class="col-xs-3">
 				<h4><span class="label label-primary">Utrzymywana temperatura</span></h4>
 				<div class="well well-sm">
@@ -96,7 +96,7 @@
 					<h4>Temperatura: <span id="expectedTemperatureValue">0</span>&#x2103;</h4>
 				</div>
 			</div>
-			
+
 			<div class="col-xs-3">
 				<h4><span class="label label-primary">Ustawienia</span></h4>
 				<div class="well well-sm">
@@ -154,16 +154,16 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="col-xs-5">
 				<h4><span class="label label-danger">Temperatura</span></h4>
 				<div class="well well-sm">
-					<h4>Średnia temperatura brzeczki: <span>0</span>&#x2103;</h4>
-					<h4>Czujniki w brzeczce: <span>0</span>&#x2103;, <span>0</span>&#x2103;, <span>0</span>&#x2103;, <span>0</span>&#x2103;</h4>
-					<h4>Temperatura wewnętrzna urządzenia: <span>0</span>&#x2103;</h4>
+					<h4>Średnia temperatura brzeczki: <span id='averageExternalTemperature'>0</span>&#x2103;</h4>
+					<h4>Czujniki w brzeczce: <span id='externalTemperatures'>0 &#x2103;</span></h4>
+					<h4>Temperatura wewnętrzna urządzenia: <span id='internalTemperature'>0</span>&#x2103;</h4>
 				</div>
 			</div>
-		
+
 			<div class="col-xs-4">
 				<h4><span class="label label-warning">Informacje dodatkowe</span></h4>
 				<div class="well well-sm">

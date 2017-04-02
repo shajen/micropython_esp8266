@@ -137,8 +137,9 @@ class Server:
         data['DEVICES']['FAN'] = self.devices.getFan()
 
         data['TEMP'] = {}
-        data['TEMP']['INTERNAL'] = 0.0
-        data['TEMP']['EXTERNAL'] = []
+        data['TEMP']['INTERNAL'] = self.devices.getInternalTemperature()
+        data['TEMP']['EXTERNAL'] = self.devices.getExternalTemperatures()
+        data['TEMP']['AVERAGE_EXTERNAL'] = self.devices.getAverageExternalTemperature()
 
         data['BREW'] = {}
         data['BREW']['MODE'] = self.brew.getMode()

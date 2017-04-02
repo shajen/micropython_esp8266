@@ -4,10 +4,10 @@ import ds18x20
 import utime as time
 
 PWM_CLOCK = 1000
-DALLAS_PIN = 0
-PUMP_PIN = 2
-HEATER_PIN = 14
-FAN_PIN = 12
+DALLAS_PIN = 0 #D3
+PUMP_PIN = 13 #D7
+HEATER_PIN = 14 #D5
+FAN_PIN = 12 #D6
 INTERNAL_DALLAS_ID = '28eea34625160109'
 
 class Devices:
@@ -60,6 +60,8 @@ class Devices:
         return self.externalTemperatures
 
     def getAverageExternalTemperature(self):
+        if not self.externalTemperatures:
+            return 0.0
         return sum(self.externalTemperatures)/len(self.externalTemperatures)
 
     def update(self, timer):
@@ -69,9 +71,10 @@ class Devices:
         for rom in roms:
             id = "".join("{:02x}".format(c) for c in rom)
             temperature = self.dallas.read_temp(rom)
-            if id == INTERNAL_DALLAS_ID:
-                self.internalTemperature = temperature
-            else:
-                self.externalTemperatures.append(temperature)
-            # print('%s %.2f' % (id, temperature))
+            if temperature != 85.0:
+                if id == INTERNAL_DALLAS_ID:
+                    self.internalTemperature = temperature
+                else:
+                    self.externalTemperatures.append(temperature)
+                # print('%s %.2f' % (id, temperature))
         # print('')

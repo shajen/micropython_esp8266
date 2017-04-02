@@ -4,6 +4,8 @@ import gc
 import network
 
 DEFAULT_I2C_ADDR = 0x3f
+PHASES = 2
+PHASE_REPEAT = 10
 
 class Display():
     def __init__(self, i2c, devices):
@@ -15,15 +17,17 @@ class Display():
         self.devices = devices
 
     def update(self, timer):
-        self.lcd.clear()
-        if self.count == 0:
+        if self.count % PHASE_REPEAT == 0:
+            self.lcd.clear()
+        phase = int(self.count / PHASE_REPEAT)
+        if phase == 0:
             uptime = int(ticks_ms() / 1000)
             gc.collect()
             free = gc.mem_free()
             self.lcd.write('Uptime: %d s' % uptime, lcd_i2c.LCD_LINE_1)
             self.lcd.write('Free: %d kB' % free, lcd_i2c.LCD_LINE_2)
-        elif self.count == 1:
+        elif phase == 1:
             externalTemperature = " ".join('%.2f' % t for t in self.devices.getExternalTemperatures())
             self.lcd.write('I:%.2f A:%.2f ' % (self.devices.getInternalTemperature(), self.devices.getAverageExternalTemperature()), lcd_i2c.LCD_LINE_1)
             self.lcd.write(externalTemperature, lcd_i2c.LCD_LINE_2)
-        self.count = (self.count + 1) % 2
+        self.count = (self.count + 1) % (PHASE_REPEAT * PHASES)
