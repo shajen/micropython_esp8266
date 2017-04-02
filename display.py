@@ -16,7 +16,7 @@ class Display():
         self.count = 0
         self.devices = devices
 
-    def update(self, timer):
+    def update(self):
         if self.count % PHASE_REPEAT == 0:
             self.lcd.clear()
         phase = int(self.count / PHASE_REPEAT)

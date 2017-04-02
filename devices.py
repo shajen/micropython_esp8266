@@ -18,11 +18,9 @@ class Devices:
         self.heaterPwm = PWM(Pin(HEATER_PIN), freq=PWM_CLOCK, duty=0)
         self.fanPwm = PWM(Pin(FAN_PIN), freq=PWM_CLOCK, duty=0)
         self.sound = False
-        self.oneWire = onewire.OneWire(Pin(DALLAS_PIN))
-        self.dallas = ds18x20.DS18X20(self.oneWire)
-        self.externalTemperatures = []
+        self.dallas = ds18x20.DS18X20(onewire.OneWire(Pin(DALLAS_PIN)))
+        self.externalTemperatures = {}
         self.internalTemperature = 0.0
-        self.temperaturesWithId = []
 
     @staticmethod
     def calculateDutyToPercent(value):
@@ -60,33 +58,31 @@ class Devices:
         return self.internalTemperature
 
     def getExternalTemperatures(self):
-        return self.externalTemperatures
+        return list(self.externalTemperatures.values())
 
     def getAverageExternalTemperature(self):
         if not self.externalTemperatures:
             return 0.0
-        return sum(self.externalTemperatures)/len(self.externalTemperatures)
+        return sum(self.externalTemperatures.values())/len(self.externalTemperatures)
 
-    def update(self, timer):
+    def update(self):
         self.internalTemperature = 0.0
-        self.externalTemperatures = []
-        self.temperaturesWithId = []
+        self.externalTemperatures = {}
         roms = self.dallas.scan()
         self.dallas.convert_temp()
         for rom in roms:
             id = "".join("{:02x}".format(c) for c in rom)
             temperature = self.dallas.read_temp(rom)
             if temperature != 85.0:
-                self.temperaturesWithId.append((id, temperature))
                 if id == INTERNAL_DALLAS_ID:
                     self.internalTemperature = temperature
                 else:
-                    self.externalTemperatures.append(temperature)
+                    self.externalTemperatures[id] = temperature
                 # print('%s %.2f' % (id, temperature))
         # print('')
 
-    def upload(self, timer):
-        for (serial, temperature) in self.temperaturesWithId:
+    def upload(self):
+        for (serial, temperature) in self.externalTemperatures.items():
             url = "http://monitor.shajen.pl/api/temp/add?serial=%s&temperature=%.2f&key=%s" % (serial, temperature, UPLOADER_KEY)
             Devices.httpGet(url)
 

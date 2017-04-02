@@ -11,11 +11,13 @@ _brew = brew.Brew(_devices)
 _display = display.Display(i2c, _devices)
 _server = server.Server(33455, _devices, _brew)
 
+def update(timer):
+    _display.update()
+    _devices.update()
+
 tim1 = Timer(0)
-tim1.init(period=1000, mode=Timer.PERIODIC, callback=_display.update)
+tim1.init(period=1000, mode=Timer.PERIODIC, callback=update)
 tim2 = Timer(1)
-tim2.init(period=1000, mode=Timer.PERIODIC, callback=_devices.update)
-tim3 = Timer(2)
-tim3.init(period=60000, mode=Timer.PERIODIC, callback=_devices.upload)
+tim2.init(period=60000, mode=Timer.PERIODIC, callback=lambda t: _devices.upload())
 
 _server.run()
