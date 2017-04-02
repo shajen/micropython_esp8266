@@ -65,6 +65,7 @@ class Devices:
         return sum(self.externalTemperatures)/len(self.externalTemperatures)
 
     def update(self, timer):
+        self.internalTemperature = 0.0
         self.externalTemperatures = []
         roms = self.dallas.scan()
         self.dallas.convert_temp()
