@@ -83,8 +83,12 @@ class Devices:
 
     def upload(self):
         for (serial, temperature) in self.externalTemperatures.items():
-            url = "http://monitor.shajen.pl/api/temp/add?serial=%s&temperature=%.2f&key=%s" % (serial, temperature, UPLOADER_KEY)
-            Devices.httpGet(url)
+            self.uploadTemperature(serial, temperature)
+        self.uploadTemperature(INTERNAL_DALLAS_ID, self.internalTemperature)
+
+    def uploadTemperature(self, serial, temperature):
+        url = "http://monitor.shajen.pl/api/temp/add?serial=%s&temperature=%.2f&key=%s" % (serial, temperature, UPLOADER_KEY)
+        Devices.httpGet(url)
 
     @staticmethod
     def httpGet(url):
