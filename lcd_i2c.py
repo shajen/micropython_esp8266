@@ -54,10 +54,11 @@ class LcdI2C():
             self.backlight  = 0x08
         else:
             self.backlight = 0x00
+        self.lcd_byte(0x0C,LCD_CMD)
 
     def getBacklight(self):
         return self.backlight == 0x08
-        
+
     def clear(self):
         self.lcd_byte(0x01,LCD_CMD)
 
