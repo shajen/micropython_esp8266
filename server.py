@@ -12,10 +12,11 @@ SERVER = "http://192.168.0.203:20380/shajen/beer"
 ERROR = "Not supported"
 
 class Server:
-    def __init__(self, port, devices, brew):
+    def __init__(self, port, devices, brew, display):
         self.addr = socket.getaddrinfo('0.0.0.0', port)[0][-1]
         self.devices = devices
         self.brew = brew
+        self.display = display
 
     def run(self):
         s = socket.socket()
@@ -73,7 +74,7 @@ class Server:
         return REDIRECT_HEADERS % url
 
     def processRequest(self, url, data):
-        print('GET %s HTTP' % url)
+        # print('GET %s HTTP' % url)
         for key in data:
             print('  %s=%s' % (key, data[key]))
         if url == "":
@@ -95,8 +96,11 @@ class Server:
         elif url == '/FAN' and 'LEVEL' in data:
             self.devices.setFan(int(data['LEVEL']))
             return self.apiStatus()
-        elif url == '/SETTINGS' and 'SOUND' in data:
-            self.devices.setSound(data['SOUND'] == 'PLAY')
+        elif url == '/SETTINGS':
+            if 'SOUND' in data:
+                self.devices.setSound(data['SOUND'] == 'PLAY')
+            if 'BACKLIGHT' in data:
+                self.display.setBacklight(data['BACKLIGHT'] == 'ENABLE')
             return self.apiStatus()
         elif url == '/BREW':
             if 'TEMP' in data:
@@ -130,6 +134,7 @@ class Server:
 
         data['SETTINGS'] = {}
         data['SETTINGS']['SOUND'] = self.devices.getSound()
+        data['SETTINGS']['BACKLIGHT'] = self.display.getBacklight()
 
         data['DEVICES'] = {}
         data['DEVICES']['PUMP'] = self.devices.getPump()

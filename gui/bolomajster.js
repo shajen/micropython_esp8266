@@ -19,6 +19,14 @@ function onReady() {
 			myJSON("/api/settings?sound=mute");
 		}
 	});
+	$("#backlightCheckbox").click(function() {
+		if (this.checked) {
+			myJSON("/api/settings?backlight=enable");
+		}
+		else {
+			myJSON("/api/settings?backlight=disable");
+		}
+	});
 }
 
 function doPhases(mode) {
@@ -75,6 +83,7 @@ function updateStatus(setNext) {
 			$("#stopBrew").attr("disabled", !isStarted);
 			$("#expectedTemperatureInput").slider((isStarted ? 'disable' : 'enable'));
 			$("#soundCheckbox").prop("checked", json.DATA.SETTINGS.SOUND);
+			$("#backlightCheckbox").prop("checked", json.DATA.SETTINGS.BACKLIGHT);
 			if ($("#saveBreaks").is(":disabled") && !jQuery.isEmptyObject(json.DATA.BREW.BREAKS)) {
 				breaks = json.DATA.BREW.BREAKS.length;
 				for (i=0; i<breaks; i++) {

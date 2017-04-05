@@ -16,6 +16,12 @@ class Display():
         self.count = 0
         self.devices = devices
 
+    def setBacklight(self, enable):
+        self.lcd.setBacklight(enable)
+
+    def getBacklight(self):
+        return self.lcd.getBacklight()
+        
     def update(self):
         if self.count % PHASE_REPEAT == 0:
             self.lcd.clear()
