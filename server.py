@@ -47,7 +47,7 @@ class Server:
         cl_file = cl.makefile('rwb', 0)
         while True:
             line = cl_file.readline().decode("utf-8")
-            if line.startswith('GET'):
+            if url == None and line.startswith('GET'):
                  url = line.split(' ')[1]
             if not line or line == '\r\n':
                 break
