@@ -92,9 +92,13 @@ class Devices:
 
     @staticmethod
     def httpGet(url):
-        _, _, host, path = url.split('/', 3)
-        addr = socket.getaddrinfo(host, 80)[0][-1]
-        s = socket.socket()
-        s.connect(addr)
-        s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
-        s.close()
+        try:
+            _, _, host, path = url.split('/', 3)
+            addr = socket.getaddrinfo(host, 80)[0][-1]
+            s = socket.socket()
+            s.settimeout(3.0)
+            s.connect(addr)
+            s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
+            s.close()
+        except:
+            print('http get timeout')
