@@ -24,31 +24,14 @@ class Server:
         s.bind(self.addr)
         s.listen(1)
         print('listening on', self.addr)
-        getRegex = re.compile(r'GET (.*) HTTP.*')
-        dataRegex = re.compile(r'(.*)\?(.*)=(.*)')
         while True:
             gc.collect()
             cl, self.addr = s.accept()
-            # print('client connected from', self.addr)
-            cl_file = cl.makefile('rwb', 0)
+            (url, parameters) = self.parseRequest(cl)
+            #print('GET', url, 'PARAMS', parameters)
             response = None
-            url = None
-            data = {}
-            while True:
-                line = cl_file.readline().decode("utf-8")
-                getMatch = getRegex.match(line)
-                if getMatch:
-                    url = getMatch.group(1)
-                    paramMatch = dataRegex.match(url)
-                    if paramMatch:
-                        url = paramMatch.group(1)
-                        data = {paramMatch.group(2).upper() : paramMatch.group(3).upper()}
-                if not line or line == '\r\n':
-                    break
             if url != None:
-                if url.endswith('/'):
-                    url = url[:-1]
-                response = self.processRequest(url.upper(), data)
+                response = self.processRequest(url.upper(), parameters)
             if response == None:
                 if url != None:
                     response = Server.generateResponseRedirect(SERVER + url)
@@ -56,6 +39,28 @@ class Server:
                     response = Server.generateMessageResponse(100, ERROR)
             cl.send(response)
             cl.close()
+
+    def parseRequest(self, cl):
+        url = None
+        parameters = {}
+
+        cl_file = cl.makefile('rwb', 0)
+        while True:
+            line = cl_file.readline().decode("utf-8")
+            if line.startswith('GET'):
+                 url = line.split(' ')[1]
+            if not line or line == '\r\n':
+                break
+
+        if url != None and '?' in url:
+            (url, parametersString) = url.split('?')
+            for parameterString in parametersString.upper().split('&'):
+                parameter = parameterString.split('=')
+                parameters[parameter[0]] = parameter[1]
+
+        if url != None and url.endswith('/'):
+            url = url[:-1]
+        return (url, parameters)
 
     @staticmethod
     def generateResponse(text, type):
@@ -74,9 +79,6 @@ class Server:
         return REDIRECT_HEADERS % url
 
     def processRequest(self, url, data):
-        # print('GET %s HTTP' % url)
-        for key in data:
-            print('  %s=%s' % (key, data[key]))
         if url == "":
             f = open('index.html')
             if f:
