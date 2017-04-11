@@ -4,7 +4,7 @@ import brew
 import display
 import server
 
-i2c = I2C(scl=Pin(4), sda=Pin(5), freq=400000) #D2 D1
+i2c = I2C(scl=Pin(5), sda=Pin(16), freq=400000) #D2 D1
 
 _devices = devices.Devices()
 _brew = brew.Brew(_devices)

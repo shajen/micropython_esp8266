@@ -5,7 +5,7 @@ import utime as time
 import socket
 
 PWM_CLOCK = 1000
-DALLAS_PIN = 0 #D3
+DALLAS_PIN = 4 #D3
 PUMP_PIN = 13 #D7
 HEATER_PIN = 14 #D5
 FAN_PIN = 12 #D6
