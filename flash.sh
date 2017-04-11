@@ -14,6 +14,7 @@
 
 micropython boot.py
 micropython main.py
+micropython config.py
 micropython server.py
 micropython devices.py
 micropython brew.py

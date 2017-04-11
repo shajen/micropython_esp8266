@@ -1,23 +1,16 @@
+from config import DALLAS_PIN, PUMP_PIN, HEATER_PIN, FAN_PIN, PWM_CLOCK, INTERNAL_DALLAS_ID, UPLOADER_KEY, SOUND_DEFAULT
 from machine import Pin, PWM
 import onewire
 import ds18x20
 import utime as time
 import socket
 
-PWM_CLOCK = 1000
-DALLAS_PIN = 4 #D3
-PUMP_PIN = 13 #D7
-HEATER_PIN = 14 #D5
-FAN_PIN = 12 #D6
-INTERNAL_DALLAS_ID = '28eea34625160109'
-UPLOADER_KEY = 'YOUR_API_KEY'
-
 class Devices:
     def __init__(self):
         self.pumpPwm = PWM(Pin(PUMP_PIN), freq=PWM_CLOCK, duty=0)
         self.heaterPwm = PWM(Pin(HEATER_PIN), freq=PWM_CLOCK, duty=0)
         self.fanPwm = PWM(Pin(FAN_PIN), freq=PWM_CLOCK, duty=0)
-        self.sound = False
+        self.sound = SOUND_DEFAULT
         self.dallas = ds18x20.DS18X20(onewire.OneWire(Pin(DALLAS_PIN)))
         self.externalTemperatures = {}
         self.internalTemperature = 0.0
@@ -69,7 +62,10 @@ class Devices:
         self.internalTemperature = 0.0
         self.externalTemperatures = {}
         roms = self.dallas.scan()
-        self.dallas.convert_temp()
+        try:
+            self.dallas.convert_temp()
+        except:
+            pass
         for rom in roms:
             id = "".join("{:02x}".format(c) for c in rom)
             temperature = self.dallas.read_temp(rom)

@@ -1,10 +1,11 @@
+from config import I2C_SCL_PIN, I2C_SDA_PIN, I2C_CLOCK
 from machine import Pin, I2C, Timer
 import devices
 import brew
 import display
 import server
 
-i2c = I2C(scl=Pin(5), sda=Pin(16), freq=400000) #D2 D1
+i2c = I2C(scl=Pin(I2C_SCL_PIN), sda=Pin(I2C_SDA_PIN), freq=I2C_CLOCK)
 
 _devices = devices.Devices()
 _brew = brew.Brew(_devices)
