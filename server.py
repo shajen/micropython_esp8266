@@ -44,13 +44,9 @@ class Server:
         url = None
         parameters = {}
 
-        cl_file = cl.makefile('rwb', 0)
-        while True:
-            line = cl_file.readline().decode("utf-8")
+        for line in cl.recv(1024).decode("utf-8").split('\n'):
             if url == None and line.startswith('GET'):
                  url = line.split(' ')[1]
-            if not line or line == '\r\n':
-                break
 
         if url != None and '?' in url:
             (url, parametersString) = url.split('?')
