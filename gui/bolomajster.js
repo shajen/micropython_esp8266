@@ -3,6 +3,7 @@ $(document).ready(onReady);
 var MAX_BREAKS = 10;
 var DECIMALS = 2;
 var breaks = 0;
+var timer;
 
 function onReady() {
 	console.log('ready');
@@ -59,7 +60,7 @@ function updateStatus(setNext) {
 		if (json.STATUS == 0) {
 			$("#heater").text(json.DATA.DEVICES.HEATER);
 			$("#heap").text(json.DATA.NODE.HEAP);
-			$("#uptime").text(json.DATA.NODE.UPTIME);
+			$("#uptime").text(formatSeconds(json.DATA.NODE.UPTIME));
 			$("#voltage").text(json.DATA.NODE.VOLTAGE);
 			$("#wifi_ssid").text(json.DATA.NODE.WIFI.SSID);
 			$("#wifi_signal").text(json.DATA.NODE.WIFI.SIGNAL);
@@ -95,7 +96,7 @@ function updateStatus(setNext) {
 			}
 			doPhases(json.DATA.BREW.MODE);
 			if (setNext) {
-				setTimeout(function() {
+				timer = setTimeout(function() {
 					updateStatus(setNext);
 				}, 1000);
 			}
@@ -104,10 +105,19 @@ function updateStatus(setNext) {
 }
 
 function myJSON(url, callback) {
+	clearTimeout(timer);
 	$.ajax({
 		url: url,
 		timeout: 10000,
-	}).done(callback).fail(function() {
+	}).done(function(json) {
+		$("#error").fadeOut();
+		if (url != '/api/status') {
+			updateStatus(true);
+		}
+		if (callback) {
+			callback(json);
+		}
+	}).fail(function() {
 		playSound("errorSound");
 		$("#error").fadeIn(1000);
 	});
@@ -131,12 +141,10 @@ function doBreaksButtons() {
 
 	$("#startBrew").click(function() {
 		myJSON('/api/brew?action=start');
-		updateStatus();
 	});
 
 	$("#stopBrew").click(function() {
 		myJSON('/api/brew?action=stop');
-		updateStatus();
 	});
 
 	$("#editBreaks").click(function() {
@@ -217,5 +225,19 @@ function doSlider() {
 function playSound(id) {
 	if ($('#soundCheckbox').is(':checked')) {
 		document.getElementById(id).play();
+	}
+}
+
+function formatSeconds(totalSeconds) {
+	days = Math.floor(totalSeconds / 86400);
+	hours   = Math.floor(totalSeconds % 86400 / 3600);
+	minutes = Math.floor(totalSeconds % 3600 / 60);
+	seconds = Math.floor(totalSeconds % 60);
+	str = [hours, minutes, seconds].map(function(t) { return t >= 10 ? t : '0' + t; }).join(':');
+	if (days > 0) {
+		return days + 'd ' + str;
+	}
+	else {
+		return str;
 	}
 }
