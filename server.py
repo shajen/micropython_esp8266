@@ -1,3 +1,4 @@
+from helper import printLog
 import socket
 import ure as re
 import ujson as json
@@ -23,12 +24,12 @@ class Server:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(self.addr)
         s.listen(1)
-        print('listening on', self.addr)
+        printLog('SERVER', 'listening...')
         while True:
             gc.collect()
             cl, self.addr = s.accept()
             (url, parameters) = self.parseRequest(cl)
-            #print('GET', url, 'PARAMS', parameters)
+            # printLog('SERVER', 'GET %s PARAMS %s' % (url, parameters))
             response = None
             if url != None:
                 response = self.processRequest(url.upper(), parameters)

@@ -1,5 +1,6 @@
 from config import DALLAS_PIN, PUMP_PIN, HEATER_PIN, FAN_PIN, PWM_CLOCK, INTERNAL_DALLAS_ID, UPLOADER_KEY, SOUND_DEFAULT
 from machine import Pin, PWM
+from helper import printLog
 import onewire
 import ds18x20
 import utime as time
@@ -74,8 +75,6 @@ class Devices:
                     self.internalTemperature = temperature
                 else:
                     self.externalTemperatures[id] = temperature
-                # print('%s %.2f' % (id, temperature))
-        # print('')
 
     def upload(self):
         for (serial, temperature) in self.externalTemperatures.items():
@@ -97,4 +96,4 @@ class Devices:
             s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
             s.close()
         except:
-            print('http get timeout')
+            printLog('DEVICES', 'http get timeout')

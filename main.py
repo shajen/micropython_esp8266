@@ -4,7 +4,9 @@ import devices
 import brew
 import display
 import server
+import ntptime
 
+ntptime.settime()
 i2c = I2C(scl=Pin(I2C_SCL_PIN), sda=Pin(I2C_SDA_PIN), freq=I2C_CLOCK)
 
 _devices = devices.Devices()
