@@ -1,4 +1,4 @@
-from helper import printLog, printDebug
+from helper import printLog, printDebug, SERVER
 import socket
 import ure as re
 import ujson as json
@@ -9,7 +9,6 @@ REDIRECT_HEADERS = "HTTP/1.1 302\nLocation: %s\n"
 RESPONSE_HEADERS = "HTTP/1.1 200 OK\nContent-Length: %d\nContent-Type: %s\nAccess-Control-Allow-Origin: *\nConnection: Closed\r\n\r\n%s"
 JSON_TYPE_HEADER = "application/json"
 HTML_TYPE_HEADER = "text/html"
-SERVER = "http://192.168.0.203:20380/shajen/beer"
 ERROR = "Not supported"
 
 class Server:
