@@ -1,4 +1,5 @@
-from helper import printLog, printDebug, SERVER
+from helper import printLog, printDebug
+from config import SERVER
 import socket
 import ure as re
 import ujson as json
