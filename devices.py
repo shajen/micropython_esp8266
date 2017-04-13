@@ -82,5 +82,6 @@ class Devices:
         self.uploadTemperature(INTERNAL_DALLAS_ID, self.internalTemperature)
 
     def uploadTemperature(self, serial, temperature):
-        url = "http://monitor.shajen.pl/api/temp/add?serial=%s&temperature=%.2f&key=%s" % (serial, temperature, UPLOADER_KEY)
-        httpGet(url)
+        if temperature != 0.0:
+            url = "http://monitor.shajen.pl/api/temp/add?serial=%s&temperature=%.2f&key=%s" % (serial, temperature, UPLOADER_KEY)
+            httpGet(url)
