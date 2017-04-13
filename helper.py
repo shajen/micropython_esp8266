@@ -1,3 +1,4 @@
+from config import DEBUG
 import utime
 import ntptime
 import machine
@@ -7,7 +8,11 @@ def printLog(label, message):
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
     ENDC = '\033[0m'
-    print("[%s%s%s][%s%d-%02d-%02d %02d:%02d:%02d:%03d%s] %s" % (GREEN, label, ENDC, YELLOW, year, month, day, hour, minute, second, ms, ENDC, message))
+    print("[%s%d-%02d-%02d %02d:%02d:%02d:%03d%s][%s%s%s] %s" % (YELLOW, year, month, day, hour, minute, second, ms, ENDC, GREEN, label, ENDC, message))
+
+def printDebug(label, message):
+    if DEBUG:
+        printLog(label, message)
 
 def syncDatetime():
     for i in range(1, 10):
@@ -19,3 +24,17 @@ def syncDatetime():
             break
         except:
             printLog('SYNC', 'ERROR')
+
+def httpGet(url):
+    try:
+        import socket
+        printDebug('HTTP', 'GET %s' % url)
+        _, _, host, path = url.split('/', 3)
+        addr = socket.getaddrinfo(host, 80)[0][-1]
+        s = socket.socket()
+        s.settimeout(3.0)
+        s.connect(addr)
+        s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
+        s.close()
+    except:
+        printLog('HTTP', 'GET timeout %s' % url)

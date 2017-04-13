@@ -1,4 +1,4 @@
-from helper import printLog
+from helper import printLog, printDebug
 import socket
 import ure as re
 import ujson as json
@@ -29,7 +29,7 @@ class Server:
             gc.collect()
             cl, self.addr = s.accept()
             (url, parameters) = self.parseRequest(cl)
-            # printLog('SERVER', 'GET %s PARAMS %s' % (url, parameters))
+            printDebug('SERVER', 'GET %s PARAMS %s' % (url, parameters))
             response = None
             if url != None:
                 response = self.processRequest(url.upper(), parameters)

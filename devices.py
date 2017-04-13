@@ -1,6 +1,6 @@
 from config import DALLAS_PIN, PUMP_PIN, HEATER_PIN, FAN_PIN, PWM_CLOCK, INTERNAL_DALLAS_ID, UPLOADER_KEY, SOUND_DEFAULT
 from machine import Pin, PWM
-from helper import printLog
+from helper import printLog, printDebug, httpGet
 import onewire
 import ds18x20
 import utime as time
@@ -83,17 +83,4 @@ class Devices:
 
     def uploadTemperature(self, serial, temperature):
         url = "http://monitor.shajen.pl/api/temp/add?serial=%s&temperature=%.2f&key=%s" % (serial, temperature, UPLOADER_KEY)
-        Devices.httpGet(url)
-
-    @staticmethod
-    def httpGet(url):
-        try:
-            _, _, host, path = url.split('/', 3)
-            addr = socket.getaddrinfo(host, 80)[0][-1]
-            s = socket.socket()
-            s.settimeout(3.0)
-            s.connect(addr)
-            s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
-            s.close()
-        except:
-            printLog('DEVICES', 'http get timeout')
+        httpGet(url)
