@@ -65,8 +65,9 @@ class Devices:
         roms = self.dallas.scan()
         try:
             self.dallas.convert_temp()
-        except:
-            pass
+            printDebug("DEVICES", "read %d dallas sensors success" % len(roms))
+        except Exception as e:
+            printDebug("DEVICES", "dallas exception %s" % e)
         for rom in roms:
             id = "".join("{:02x}".format(c) for c in rom)
             temperature = self.dallas.read_temp(rom)
@@ -77,9 +78,11 @@ class Devices:
                     self.externalTemperatures[id] = temperature
 
     def upload(self):
+        printDebug("DEVICES", "start upload")
         for (serial, temperature) in self.externalTemperatures.items():
             self.uploadTemperature(serial, temperature)
         self.uploadTemperature(INTERNAL_DALLAS_ID, self.internalTemperature)
+        printDebug("DEVICES", "finish upload")
 
     def uploadTemperature(self, serial, temperature):
         if temperature != 0.0:

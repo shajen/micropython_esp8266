@@ -1,6 +1,6 @@
 from config import I2C_SCL_PIN, I2C_SDA_PIN, I2C_CLOCK
 from machine import Pin, I2C, Timer
-from helper import syncDatetime
+from helper import syncDatetime, printDebug
 import devices
 import brew
 import display
@@ -15,8 +15,10 @@ _display = display.Display(i2c, _devices)
 _server = server.Server(33455, _devices, _brew, _display)
 
 def update(timer):
+    printDebug("UPDATE", "start")
     _display.update()
     _devices.update()
+    printDebug("UPDATE", "finish")
 
 tim1 = Timer(0)
 tim1.init(period=1000, mode=Timer.PERIODIC, callback=update)

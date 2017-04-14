@@ -27,9 +27,12 @@ class Server:
         printLog('SERVER', 'listening...')
         while True:
             gc.collect()
-            cl, self.addr = s.accept()
+            printDebug('SERVER', 'waiting for new connection...')
+            cl, (ip, port) = s.accept()
+            printDebug('SERVER', '--------------------------------------')
+            printDebug('SERVER', 'new connection from %s:%s' % (ip, port))
             (url, parameters) = self.parseRequest(cl)
-            printDebug('SERVER', 'GET %s PARAMS %s' % (url, parameters))
+            printDebug('SERVER', 'get request %s - %s' % (url, parameters))
             response = None
             if url != None:
                 response = self.processRequest(url.upper(), parameters)
@@ -38,16 +41,22 @@ class Server:
                     response = Server.generateResponseRedirect(SERVER + url)
                 else:
                     response = Server.generateMessageResponse(100, ERROR)
+            printDebug('SERVER', 'writing response...')
             cl.send(response)
             cl.close()
+            printDebug('SERVER', 'wrote %d bytes success' % len(response))
 
     def parseRequest(self, cl):
         url = None
         parameters = {}
 
-        for line in cl.recv(1024).decode("utf-8").split('\n'):
+        printDebug('SERVER', 'waiting for data...')
+        data = cl.recv(1024)
+        printDebug('SERVER', 'received %d bytes' % len(data))
+        for line in data.decode("utf-8").split('\n'):
             if url == None and line.startswith('GET'):
-                 url = line.split(' ')[1]
+                printDebug('SERVER', 'received %s' % line)
+                url = line.split(' ')[1]
 
         if url != None and '?' in url:
             (url, parametersString) = url.split('?')

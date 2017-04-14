@@ -8,7 +8,7 @@ def printLog(label, message):
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
     ENDC = '\033[0m'
-    print("[%s%d-%02d-%02d %02d:%02d:%02d:%03d%s][%s%s%s] %s" % (YELLOW, year, month, day, hour, minute, second, ms, ENDC, GREEN, label, ENDC, message))
+    print("[%s%d-%02d-%02d %02d:%02d:%02d:%03d%s] [%s%7s%s] %s" % (YELLOW, year, month, day, hour, minute, second, ms, ENDC, GREEN, label, ENDC, message))
 
 def printDebug(label, message):
     if DEBUG:
@@ -28,7 +28,7 @@ def syncDatetime():
 def httpGet(url):
     try:
         import socket
-        printDebug('HTTP', 'GET %s' % url)
+        printDebug('HTTP', 'start GET %s' % url)
         _, _, host, path = url.split('/', 3)
         addr = socket.getaddrinfo(host, 80)[0][-1]
         s = socket.socket()
@@ -36,5 +36,7 @@ def httpGet(url):
         s.connect(addr)
         s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
         s.close()
-    except:
+        printDebug("HTTP", "finish GET")
+    except Exception as e:
         printLog('HTTP', 'GET timeout %s' % url)
+        printLog('HTTP', 'GET exception: %s' % e)
