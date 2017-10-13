@@ -1,4 +1,4 @@
-from helper import printLog, printDebug
+from utils import printLog, printDebug
 import ujson
 
 class RstripServerController():

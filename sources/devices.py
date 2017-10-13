@@ -1,6 +1,6 @@
 from config import DALLAS_PIN, UPLOADER_KEY
 from machine import Pin
-from helper import printDebug, httpGet
+from utils import printDebug, httpGet
 import onewire
 import ds18x20
 

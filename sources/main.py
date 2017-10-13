@@ -1,6 +1,6 @@
 from config import I2C_SCL_PIN, I2C_SDA_PIN, I2C_CLOCK
 from machine import Pin, I2C, Timer
-from helper import syncDatetime, printDebug
+from utils import syncDatetime, printDebug
 import devices
 import display
 import utime

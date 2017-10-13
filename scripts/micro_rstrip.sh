@@ -10,7 +10,7 @@ pushd "$DIR/../sources"
 eval $FLASH_COMMAND boot.py
 eval $FLASH_COMMAND rstrip/main.py
 eval $FLASH_COMMAND config.py
-eval $FLASH_COMMAND helper.py
+eval $FLASH_COMMAND utils.py
 eval $FLASH_COMMAND server.py
 eval $FLASH_COMMAND rstrip/rstrip_server_controller.py
 

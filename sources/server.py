@@ -1,6 +1,6 @@
 import usocket
 import ure
-from helper import printLog, printDebug
+from utils import printLog, printDebug
 
 class Server():
     def __init__(self, port, controller):
