@@ -13,5 +13,6 @@ eval $FLASH_COMMAND config.py
 eval $FLASH_COMMAND utils.py
 eval $FLASH_COMMAND server.py
 eval $FLASH_COMMAND rstrip/rstrip_server_controller.py
+eval $FLASH_COMMAND status_server_controller.py
 
 popd
