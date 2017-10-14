@@ -1,11 +1,12 @@
-import usocket
-import ure
 from utils import printLog, printDebug
+import ujson
+import ure
+import usocket
 
 class Server():
-    def __init__(self, port, controller):
+    def __init__(self, port, controllers):
         self.port = port
-        self.controller = controller
+        self.controllers = controllers
         self.re = ure.compile("GET (.*) HTTP")
 
     def run(self):
@@ -18,17 +19,50 @@ class Server():
         while True:
             cl, addr = socket.accept()
             printDebug('SERVER', 'client connected from %s:%s' % (addr[0], addr[1]))
-            data = cl.recv(4096).decode("utf-8").upper()
-            match = self.re.search(data)
+            (url, params, useHtml) = self.parseRequest(cl)
+            if url:
+                printDebug('SERVER', 'GET %s %s (http:%s)' % (url, params, useHtml))
+                send = False
+                for controller in self.controllers:
+                    response = controller.process(url, params)
+                    if response:
+                        printDebug('SERVER', 'response: %s' % response)
+                        self.sendResponse(cl, response, useHtml)
+                        send = True
+                        break
+                if not send:
+                    response = self.error(101, "Not supported")
+                    printDebug('SERVER', 'response: %s' % response)
+                    self.sendResponse(cl, response, useHtml)
+            else:
+                self.sendResponse(cl, 'can not parse request', useHtml)
+
+    def sendResponse(self, cl, response, useHtml):
+        if useHtml:
+            cl.send('HTTP/1.1 200 OK\r\n')
+            cl.send('Content-Type: application/javascript\r\n')
+            cl.send('Content-Length: %d\r\n' % len(response))
+            cl.send('Connection: Closed\r\n')
+            cl.send('\r\n')
+        cl.send(response)
+        cl.close()
+
+    def parseRequest(self, cl):
+        url = None
+        params = None
+        useHtml = False
+        cl_file = cl.makefile('rwb', 0)
+        while True:
+            line = cl_file.readline().decode("utf-8").upper()
+            if not line or line == '\r\n':
+                break
+            match = self.re.search(line)
             if match:
                 (url, params) = self.parseUrl(match.group(1))
-                printDebug('SERVER', 'GET %s %s' % (url, params))
-                response = self.controller.process(url, params)
-                printDebug('SERVER', 'response: %s' % response)
-                cl.send(response + '\r\n')
-            else:
-                printDebug('SERVER', 'can not parase request')
-            cl.close()
+            useHtml = useHtml or 'HOST:' in line
+        if url == None:
+            printDebug('SERVER', 'can not parse request')
+        return (url, params, useHtml)
 
     def parseUrl(self, url):
         if '?' in url:
@@ -40,3 +74,6 @@ class Server():
 
     def uniteUrl(self, url):
         return url if url.endswith('/') else url + '/'
+
+    def error(self, number, message):
+        return ujson.dumps({"status": number, "message": message})

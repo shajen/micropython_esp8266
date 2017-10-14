@@ -26,6 +26,5 @@ def doConnect():
 detectSoftReboot()
 print('Bolomajster - micropython')
 print('Reset cause %d' % machine.reset_cause())
-utime.sleep(3)
 doConnect()
 webrepl.start()
