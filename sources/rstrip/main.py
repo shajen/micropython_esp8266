@@ -14,6 +14,7 @@ tim0.init(period=600000, mode=Timer.PERIODIC, callback=lambda t: timeout10minute
 timeout10minutes()
 
 rstripController = rstrip_server_controller.RstripServerController()
-statusController = status_server_controller.StatusServerController()
-_server = server.Server(33455, [rstripController, statusController])
+controllers = [rstripController]
+statusController = status_server_controller.StatusServerController(controllers)
+_server = server.Server(33455, controllers + [statusController])
 _server.run()

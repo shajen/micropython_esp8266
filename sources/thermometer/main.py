@@ -37,6 +37,6 @@ tim2.init(period=60000, mode=Timer.PERIODIC, callback=timeout1minute)
 tim3 = Timer(2)
 tim3.init(period=600000, mode=Timer.PERIODIC, callback=timeout10minutes)
 
-statusController = status_server_controller.StatusServerController()
+statusController = status_server_controller.StatusServerController([])
 _server = server.Server(33455, [statusController])
 _server.run()

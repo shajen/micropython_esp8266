@@ -17,3 +17,4 @@ else
 fi
 
 python ~/git/micropython/webrepl/webrepl_cli.py "$FILE" "$IP:$PORT:/$(basename $FILE)"
+#[f if f == 'boot.py' else os.remove(f) for f in os.listdir()]

@@ -1,3 +1,4 @@
+from config import NETWORKS
 from utils import printLog, printDebug, chipId
 import esp
 import gc
@@ -6,12 +7,16 @@ import network
 import sys
 import ubinascii
 import ujson
-import utime
 import usocket
+import utime
 
 class StatusServerController():
-    def __init__(self):
+    def __init__(self, controllers):
         self.wlan = network.WLAN()
+        self.controllers = controllers
+
+    def name(self):
+        return 'status'
 
     def process(self, url, params):
         if url == '/':
@@ -32,11 +37,22 @@ class StatusServerController():
             data['uptime']['formatted'] = self.uptime()
             data['uptime']['seconds'] = int(utime.ticks_ms() / 1000)
             data['network'] = {}
-            data['network']['mac'] = ubinascii.hexlify(self.wlan.config('mac'),':').decode()
-            data['network']['ip'] = self.wlan.ifconfig()[0]
+            data['network']['local'] = {}
+            data['network']['local']['mac'] = ubinascii.hexlify(self.wlan.config('mac'),':').decode()
+            data['network']['local']['ip'] = self.wlan.ifconfig()[0]
+            (ssid, mac, rssi) = self.ssidAndRssi()
+            data['network']['wifi'] = {}
+            data['network']['wifi']['ssid'] = ssid
+            data['network']['wifi']['mac'] = mac
+            data['network']['wifi']['rssi'] = rssi
+            data['controllers'] = [c.name() for c in self.controllers] + [self.name()]
             return ujson.dumps(data)
         elif url == '/REBOOT/':
             machine.reset()
+
+    def ssidAndRssi(self):
+        wlan = network.WLAN(network.STA_IF)
+        return (wlan.config('essid'), wlan.config('dhcp_hostname'), wlan.status('rssi'))
 
     def datetime(self):
         year, month, day, _, hour, minute, second, ms = machine.RTC().datetime()

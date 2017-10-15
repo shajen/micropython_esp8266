@@ -13,6 +13,9 @@ class RstripServerController():
         data['4'] = 1
         self.gpio['data'] = data
 
+    def name(self):
+        return 'remote control socket'
+
     def process(self, url, params):
         if url == '/GPIO/':
             return ujson.dumps(self.gpio)

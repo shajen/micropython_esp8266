@@ -2,29 +2,42 @@ import machine
 import network
 import utime
 import webrepl
+import os
 
 def detectSoftReboot():
     if utime.ticks_ms() >= 1000:
         machine.reset()
 
 def doConnect():
-    NETWORKS = {"SSID_1": "PASSWORD_1", "SSID_2": "PASSWORD_2"}
-    network.WLAN(network.AP_IF).active(False)
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    while not wlan.isconnected():
-        nets = wlan.scan()
-        for net in nets:
-            ssid = net[0].decode()
-            if ssid in NETWORKS:
-                print('Try to connect to %s' % ssid)
-                wlan.connect(ssid, NETWORKS[ssid])
+    try:
+        NETWORKS = {"SSID_1": "PASSWORD_1", "SSID_2": "PASSWORD_2"}
+        network.WLAN(network.AP_IF).active(False)
+        wlan = network.WLAN(network.STA_IF)
+        wlan.active(True)
         while not wlan.isconnected():
-            machine.idle()
-    print('WLAN connection succeeded!')
+            nets = wlan.scan()
+            for net in nets:
+                ssid = net[0].decode()
+                if ssid in NETWORKS:
+                    print('Try to connect to %s' % ssid)
+                    wlan.connect(ssid, NETWORKS[ssid])
+            while not wlan.isconnected():
+                machine.idle()
+        print('WLAN connection succeeded!')
+    except:
+        print('Exception during scan!')
+        machine.reset()
+
+def setWebreplPassword():
+    if "webrepl_cfg.py" not in os.listdir():
+        print('webrepl set password')
+        f = open("webrepl_cfg.py", 'w')
+        f.write("PASS = 'PASSWORD'\n")
+        f.close()
 
 detectSoftReboot()
-print('Bolomajster - micropython')
+print('shajen development - micropython')
 print('Reset cause %d' % machine.reset_cause())
 doConnect()
+setWebreplPassword()
 webrepl.start()
