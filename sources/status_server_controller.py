@@ -1,4 +1,4 @@
-from utils import printLog, printDebug
+from utils import printLog, printDebug, chipId
 import esp
 import gc
 import machine
@@ -20,7 +20,7 @@ class StatusServerController():
             data['nodemcu'] = {}
             data['nodemcu']['mem_free'] = gc.mem_free()
             data['nodemcu']['flash_id'] = esp.flash_id()
-            data['nodemcu']['chip_id'] = ubinascii.hexlify(machine.unique_id()).decode()
+            data['nodemcu']['chip_id'] = chipId()
             data['nodemcu']['bootreason'] = machine.reset_cause()
             data['python'] = {}
             data['python']['implementation'] = self.implementation()

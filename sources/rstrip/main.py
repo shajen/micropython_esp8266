@@ -5,10 +5,13 @@ import status_server_controller
 import server
 
 printLog("NODEMCU", "boot up")
-syncDatetime()
+
+def timeout10minutes():
+    syncDatetime()
 
 tim0 = Timer(0)
-tim0.init(period=600000, mode=Timer.PERIODIC, callback=lambda t: syncDatetime())
+tim0.init(period=600000, mode=Timer.PERIODIC, callback=lambda t: timeout10minutes())
+timeout10minutes()
 
 rstripController = rstrip_server_controller.RstripServerController()
 statusController = status_server_controller.StatusServerController()

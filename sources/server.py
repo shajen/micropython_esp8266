@@ -27,19 +27,19 @@ class Server():
                     response = controller.process(url, params)
                     if response:
                         printDebug('SERVER', 'response: %s' % response)
-                        self.sendResponse(cl, response, useHtml)
+                        self.sendResponse(cl, response, 200, useHtml)
                         send = True
                         break
                 if not send:
                     response = self.error(101, "Not supported")
                     printDebug('SERVER', 'response: %s' % response)
-                    self.sendResponse(cl, response, useHtml)
+                    self.sendResponse(cl, response, 404, useHtml)
             else:
-                self.sendResponse(cl, 'can not parse request', useHtml)
+                self.sendResponse(cl, 'can not parse request', 404, useHtml)
 
-    def sendResponse(self, cl, response, useHtml):
+    def sendResponse(self, cl, response, status, useHtml):
         if useHtml:
-            cl.send('HTTP/1.1 200 OK\r\n')
+            cl.send('HTTP/1.1 %d OK\r\n' % status)
             cl.send('Content-Type: application/javascript\r\n')
             cl.send('Content-Length: %d\r\n' % len(response))
             cl.send('Connection: Closed\r\n')

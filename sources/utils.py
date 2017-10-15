@@ -41,3 +41,8 @@ def httpGet(url):
     except Exception as e:
         printDebug('HTTP', 'GET timeout %s' % url)
         printDebug('HTTP', 'GET exception: %s' % e)
+
+def chipId():
+    id = machine.unique_id()
+    return '%02x%02x%02x' % (id[2], id[1], id[0])
+
