@@ -4,7 +4,7 @@ import rstrip_server_controller
 import status_server_controller
 import server
 
-printLog("NODEMCU", "boot up")
+printLog("NODEMCU", "rstrip boot up")
 
 def timeout10minutes():
     syncDatetime()

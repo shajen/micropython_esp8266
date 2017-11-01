@@ -53,7 +53,7 @@ class Server():
         useHtml = False
         cl_file = cl.makefile('rwb', 0)
         while True:
-            line = cl_file.readline().decode("utf-8").upper()
+            line = cl_file.readline().decode("utf-8").upper() ### TODO: fix it
             if not line or line == '\r\n':
                 break
             match = self.re.search(line)

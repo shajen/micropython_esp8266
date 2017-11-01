@@ -8,7 +8,7 @@ import server
 import status_server_controller
 import utime
 
-printLog("NODEMCU", "boot up")
+printLog("NODEMCU", "thermometer boot up")
 
 i2c = I2C(scl=Pin(I2C_SCL_PIN), sda=Pin(I2C_SDA_PIN), freq=I2C_CLOCK)
 
