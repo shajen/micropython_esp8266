@@ -16,11 +16,11 @@ def printDebug(label, message):
         printLog(label, message)
 
 def syncDatetime():
-    for i in range(1, 10):
+    for i in range(1, 4):
         try:
             printLog('NTP', '%d try' % i)
             ntptime.settime()
-            tm = utime.localtime(utime.time() + 2 * 60 * 60) # +2h
+            tm = utime.localtime(utime.time() + 1 * 60 * 60) # +2h
             tm = tm[0:3] + (0,) + tm[3:6] + (0,)
             machine.RTC().datetime(tm)
             printLog('NTP', 'success')

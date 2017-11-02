@@ -1,4 +1,4 @@
-from config import BACKLIGHT_DEFAULT
+from config import BACKLIGHT
 import utime as time
 
 LCD_WIDTH = 16   # Maximum characters per line
@@ -21,7 +21,10 @@ class LcdI2C():
     def __init__(self, i2c, address):
         self.i2c = i2c
         self.address = address
-        self.backlight = BACKLIGHT_DEFAULT
+        if BACKLIGHT:
+            self.backlight  = 0x08
+        else:
+            self.backlight = 0x00
         self.lcd_byte(0x33,LCD_CMD) # 110011 Initialise
         self.lcd_byte(0x32,LCD_CMD) # 110010 Initialise
         self.lcd_byte(0x06,LCD_CMD) # 000110 Cursor move direction

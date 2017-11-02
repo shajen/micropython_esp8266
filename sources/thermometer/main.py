@@ -1,6 +1,5 @@
-from config import I2C_SCL_PIN, I2C_SDA_PIN, I2C_CLOCK
-from machine import Pin, I2C, Timer
-from machine import Timer
+from config import I2C_SCL_PIN, I2C_SDA_PIN, I2C_CLOCK, SERVER_PORT, REBOOT_EVERY_HOUR
+from machine import Pin, I2C, Timer, reset
 from utils import syncDatetime, printDebug, printLog
 import devices
 import display
@@ -27,6 +26,10 @@ def timeout1minute(timer):
 def timeout10minutes(timer):
     syncDatetime()
 
+def timeout1hours(timer):
+    if REBOOT_EVERY_HOUR:
+        reset()
+
 timeout1minute(None)
 timeout10minutes(None)
 
@@ -36,7 +39,9 @@ tim2 = Timer(1)
 tim2.init(period=60000, mode=Timer.PERIODIC, callback=timeout1minute)
 tim3 = Timer(2)
 tim3.init(period=600000, mode=Timer.PERIODIC, callback=timeout10minutes)
+tim4 = Timer(3)
+tim4.init(period=3600000, mode=Timer.PERIODIC, callback=timeout1hours)
 
 statusController = status_server_controller.StatusServerController([])
-_server = server.Server(33455, [statusController])
+_server = server.Server(SERVER_PORT, [statusController])
 _server.run()
