@@ -20,13 +20,14 @@ def syncDatetime():
         try:
             printLog('NTP', '%d try' % i)
             ntptime.settime()
-            tm = utime.localtime(utime.time() + 1 * 60 * 60) # +2h
+            tm = utime.localtime(utime.time() + 2 * 60 * 60) # +2h
             tm = tm[0:3] + (0,) + tm[3:6] + (0,)
             machine.RTC().datetime(tm)
             printLog('NTP', 'success')
-            break
+            return
         except:
             printLog('NTP', 'ERROR')
+    machine.reset()
 
 def httpGet(url):
     try:
