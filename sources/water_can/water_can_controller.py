@@ -10,6 +10,9 @@ class WaterCanController():
 
     def update(self):
         secondsFromMidnight = utime.time() % 86400
-        state = PUMP_START <= secondsFromMidnight and secondsFromMidnight <= PUMP_START + PUMP_TIME
+        state = False
+        for startTime in PUMP_START:
+            if startTime <= secondsFromMidnight and secondsFromMidnight <= startTime + PUMP_TIME:
+                state = True
         self.pin.value(not state)
         printDebug("WATER", "set state %d" % state)
