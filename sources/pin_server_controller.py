@@ -1,7 +1,7 @@
 from utils import printLog, printDebug
 import ujson
 
-class RstripServerController():
+class PinServerController():
     def __init__(self):
         self.gpio = {}
         self.gpio['status'] = 0
