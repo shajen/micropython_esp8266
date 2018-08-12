@@ -13,5 +13,7 @@ eval $FLASH_COMMAND water_can/water_can_controller.py
 eval $FLASH_COMMAND config.py
 eval $FLASH_COMMAND utils.py
 eval $FLASH_COMMAND devices.py
+eval $FLASH_COMMAND server.py
+eval $FLASH_COMMAND status_server_controller.py
 
 popd
