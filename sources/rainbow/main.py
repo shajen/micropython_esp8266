@@ -1,33 +1,35 @@
-from config import SERVER_PORT, REBOOT_EVERY_HOUR
-from machine import Pin, Timer, reset
-from utils import syncDatetime, printDebug, printLog
+import animator_server_controller
+import config
+import machine
+import neopixel
 import server
 import status_server_controller
-import animator_server_controller
+import utils
 
-printLog("NODEMCU", "animator boot up")
+utils.printLog("NODEMCU", "animator boot up")
 
-animatorServerController = animator_server_controller.AnimatorServerController()
+np = neopixel.NeoPixel(machine.Pin(config.WS2811_PIN), 60)
+animatorServerController = animator_server_controller.AnimatorServerController(np)
 statusController = status_server_controller.StatusServerController([animatorServerController])
 
 def timeout10milliseconds(timer):
     animatorServerController.tick()
 
 def timeout10minutes(timer):
-    syncDatetime()
+    utils.syncDatetime()
 
 def timeout1hours(timer):
-    if REBOOT_EVERY_HOUR:
-        reset()
+    if config.REBOOT_EVERY_HOUR:
+        machine.reset()
 
 timeout10minutes(None)
 
-tim1 = Timer(0)
-tim1.init(period=10, mode=Timer.PERIODIC, callback=timeout10milliseconds)
-tim3 = Timer(2)
-tim3.init(period=600000, mode=Timer.PERIODIC, callback=timeout10minutes)
-tim4 = Timer(3)
-tim4.init(period=3600000, mode=Timer.PERIODIC, callback=timeout1hours)
+tim1 = machine.Timer(0)
+tim1.init(period=10, mode=machine.Timer.PERIODIC, callback=timeout10milliseconds)
+tim3 = machine.Timer(2)
+tim3.init(period=600000, mode=machine.Timer.PERIODIC, callback=timeout10minutes)
+tim4 = machine.Timer(3)
+tim4.init(period=3600000, mode=machine.Timer.PERIODIC, callback=timeout1hours)
 
-_server = server.Server(SERVER_PORT, [statusController, animatorServerController])
+_server = server.Server(config.SERVER_PORT, [statusController, animatorServerController])
 _server.run()

@@ -14,5 +14,9 @@ eval $FLASH_COMMAND utils.py
 eval $FLASH_COMMAND server.py
 eval $FLASH_COMMAND status_server_controller.py
 eval $FLASH_COMMAND animator_server_controller.py
+eval $FLASH_COMMAND animations/base_animation.py
+eval $FLASH_COMMAND animations/strip_animation.py
+eval $FLASH_COMMAND animations/full_smooth_transition_animation.py
+eval $FLASH_COMMAND animations/rainbow_animation.py
 
 popd
