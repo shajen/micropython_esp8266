@@ -5,7 +5,6 @@ import uos
 class FullSmoothTransitionAnimation():
     def __init__(self, np):
         self.np = np
-        self.ledsCount = np.n
         self.currentH = 0
         self.nextH = 0
 
@@ -20,7 +19,6 @@ class FullSmoothTransitionAnimation():
         self.setLeds()
 
     def setLeds(self):
-        color = base_animation.hsvToRgb((self.currentH, 1.0, 1.0))
-        for i in range(0, self.ledsCount):
-            self.np[i] = color
+        (r, g, b) = base_animation.hsvToRgb((self.currentH, 1.0, 1.0))
+        self.np.buf = bytearray([r, g, b] * self.np.n)
         self.np.write()

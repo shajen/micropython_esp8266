@@ -28,16 +28,8 @@ def doConnect():
         print('Exception during scan!')
         machine.reset()
 
-def setWebreplPassword():
-    if "webrepl_cfg.py" not in os.listdir():
-        print('webrepl set password')
-        f = open("webrepl_cfg.py", 'w')
-        f.write("PASS = 'PASSWORD'\n")
-        f.close()
-
 detectSoftReboot()
 print('shajen development - micropython')
 print('Reset cause %d' % machine.reset_cause())
 doConnect()
-setWebreplPassword()
 webrepl.start()

@@ -1,5 +1,5 @@
-from time import ticks_ms
-from utils import printDebug
+import time
+import utils
 import lcd_i2c
 import gc
 import network
@@ -13,7 +13,7 @@ class Display():
         (ip, _, _, _) = network.WLAN(network.STA_IF).ifconfig()
         addresses = i2c.scan()
         if (len(addresses) == 1):
-            printDebug("DISPLAY", 'found on %s address' % addresses[0])
+            utils.printDebug("DISPLAY", 'found on %s address' % addresses[0])
             self.lcd = lcd_i2c.LcdI2C(i2c, addresses[0])
             self.lcd.write('Bolomajster', lcd_i2c.LCD_LINE_1)
             self.lcd.write(ip, lcd_i2c.LCD_LINE_2)
@@ -21,7 +21,7 @@ class Display():
             self.devices = devices
             self.wlan = network.WLAN(network.STA_IF)
         else:
-            printDebug("DISPLAY", 'not found')
+            utils.printDebug("DISPLAY", 'not found')
             self.lcd = None
 
     def setBacklight(self, enable):
@@ -33,7 +33,7 @@ class Display():
             return self.lcd.getBacklight()
 
     def uptime(self):
-        s = int(ticks_ms() / 1000)
+        s = int(time.ticks_ms() / 1000)
         seconds = s % 60
         s = s // 60
         minutes = s % 60

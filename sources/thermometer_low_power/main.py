@@ -1,9 +1,8 @@
-from machine import Pin, I2C, Timer, reset
-from utils import syncDatetime, printDebug, printLog
+import utils
 import devices
 import machine
 
-printLog("NODEMCU", "thermometer low power boot up")
+utils.printLog("NODEMCU", "thermometer low power boot up")
 
 _devices = devices.Devices()
 _devices.update()

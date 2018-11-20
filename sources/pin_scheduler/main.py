@@ -1,17 +1,17 @@
-from config import SERVER_PORT
-from machine import Timer
-from utils import syncDatetime, printLog
+import config
 import devices
+import machine
+import pin_scheduler
 import server
 import status_server_controller
-import pin_scheduler
+import utils
 
-printLog("NODEMCU", "water can boot up")
+utils.printLog("NODEMCU", "water can boot up")
 
 _devices = devices.Devices()
 pinScheduler = pin_scheduler.PinScheduler()
 statusController = status_server_controller.StatusServerController([])
-_server = server.Server(SERVER_PORT, [statusController])
+_server = server.Server(config.SERVER_PORT, [statusController])
 
 def timeout1second(timer):
     _devices.update()
@@ -26,19 +26,19 @@ def timeout10minutes(timer):
 
 def timeout1hour(timer):
     if not pinScheduler.isTimeNearScheduler():
-        syncDatetime()
+        utils.syncDatetime()
 
 timeout1minute(None)
 timeout10minutes(None)
 timeout1hour(None)
 
-tim1 = Timer(0)
+tim1 = machine.Timer(0)
 tim1.init(period=1000, mode=Timer.PERIODIC, callback=timeout1second)
-tim2 = Timer(1)
+tim2 = machine.Timer(1)
 tim2.init(period=60000, mode=Timer.PERIODIC, callback=timeout1minute)
-tim3 = Timer(2)
+tim3 = machine.Timer(2)
 tim3.init(period=600000, mode=Timer.PERIODIC, callback=timeout10minutes)
-tim4 = Timer(3)
+tim4 = machine.Timer(3)
 tim4.init(period=3600000, mode=Timer.PERIODIC, callback=timeout1hour)
 
 _server.run()

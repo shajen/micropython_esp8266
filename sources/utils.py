@@ -1,4 +1,4 @@
-from config import DEBUG
+import config
 import utime
 import ntptime
 import machine
@@ -12,7 +12,7 @@ def printLog(label, message):
     print("[%s%d-%02d-%02d %02d:%02d:%02d:%03d%s] [%s%14s%s] %s" % (YELLOW, year, month, day, hour, minute, second, ms, ENDC, GREEN, label, ENDC, message))
 
 def printDebug(label, message):
-    if DEBUG:
+    if config.DEBUG:
         printLog(label, message)
 
 def syncDatetime():
@@ -20,7 +20,7 @@ def syncDatetime():
         try:
             printLog('NTP', '%d try' % i)
             ntptime.settime()
-            tm = utime.localtime(utime.time() + 2 * 60 * 60) # +2h
+            tm = utime.localtime(utime.time() + 1 * 60 * 60) # +2h
             tm = tm[0:3] + (0,) + tm[3:6] + (0,)
             machine.RTC().datetime(tm)
             printLog('NTP', 'success')

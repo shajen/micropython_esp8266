@@ -1,5 +1,3 @@
-from config import NETWORKS
-from utils import printLog, printDebug, chipId
 import esp
 import gc
 import machine
@@ -8,6 +6,7 @@ import sys
 import ubinascii
 import ujson
 import usocket
+import utils
 import utime
 
 class StatusServerController():
@@ -26,7 +25,7 @@ class StatusServerController():
             data['nodemcu'] = {}
             data['nodemcu']['mem_free'] = gc.mem_free()
             data['nodemcu']['flash_id'] = esp.flash_id()
-            data['nodemcu']['chip_id'] = chipId()
+            data['nodemcu']['chip_id'] = utils.chipId()
             data['nodemcu']['bootreason'] = machine.reset_cause()
             data['nodemcu']['voltage'] = self.adc.read() / 1000.0
             data['python'] = {}
@@ -38,14 +37,14 @@ class StatusServerController():
             data['uptime'] = {}
             data['uptime']['formatted'] = self.uptime()
             data['uptime']['seconds'] = int(utime.ticks_ms() / 1000)
+            (ssid, hostname, rssi) = self.ssidAndRssi()
             data['network'] = {}
             data['network']['local'] = {}
             data['network']['local']['mac'] = ubinascii.hexlify(self.wlan.config('mac'),':').decode()
             data['network']['local']['ip'] = self.wlan.ifconfig()[0]
-            (ssid, mac, rssi) = self.ssidAndRssi()
+            data['network']['local']['hostname'] = hostname
             data['network']['wifi'] = {}
             data['network']['wifi']['ssid'] = ssid
-            data['network']['wifi']['mac'] = mac
             data['network']['wifi']['rssi'] = rssi
             data['controllers'] = [c.name() for c in self.controllers] + [self.name()]
             return ujson.dumps(data)

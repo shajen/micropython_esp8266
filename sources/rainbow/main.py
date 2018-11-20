@@ -12,7 +12,7 @@ np = neopixel.NeoPixel(machine.Pin(config.WS2811_PIN), 60)
 animatorServerController = animator_server_controller.AnimatorServerController(np)
 statusController = status_server_controller.StatusServerController([animatorServerController])
 
-def timeout10milliseconds(timer):
+def timeoutTick(timer):
     animatorServerController.tick()
 
 def timeout10minutes(timer):
@@ -25,7 +25,7 @@ def timeout1hours(timer):
 timeout10minutes(None)
 
 tim1 = machine.Timer(0)
-tim1.init(period=10, mode=machine.Timer.PERIODIC, callback=timeout10milliseconds)
+tim1.init(period=10, mode=machine.Timer.PERIODIC, callback=timeoutTick)
 tim3 = machine.Timer(2)
 tim3.init(period=600000, mode=machine.Timer.PERIODIC, callback=timeout10minutes)
 tim4 = machine.Timer(3)

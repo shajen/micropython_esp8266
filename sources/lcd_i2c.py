@@ -1,4 +1,4 @@
-from config import BACKLIGHT
+import config
 import utime as time
 
 LCD_WIDTH = 16   # Maximum characters per line
@@ -21,7 +21,7 @@ class LcdI2C():
     def __init__(self, i2c, address):
         self.i2c = i2c
         self.address = address
-        if BACKLIGHT:
+        if config.BACKLIGHT:
             self.backlight  = 0x08
         else:
             self.backlight = 0x00

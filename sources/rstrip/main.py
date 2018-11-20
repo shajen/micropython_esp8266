@@ -1,15 +1,15 @@
-from machine import Timer
-from utils import syncDatetime, printDebug, printLog
+import machine
 import pin_server_controller
-import status_server_controller
 import server
+import status_server_controller
+import utils
 
-printLog("NODEMCU", "rstrip boot up")
+utils.printLog("NODEMCU", "rstrip boot up")
 
 def timeout10minutes():
-    syncDatetime()
+    utils.syncDatetime()
 
-tim0 = Timer(0)
+tim0 = machine.Timer(0)
 tim0.init(period=600000, mode=Timer.PERIODIC, callback=lambda t: timeout10minutes())
 timeout10minutes()
 

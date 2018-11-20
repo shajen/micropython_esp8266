@@ -1,7 +1,7 @@
-from utils import printLog, printDebug
 import ujson
 import ure
 import usocket
+import utils
 
 class Server():
     def __init__(self, port, controllers):
@@ -10,7 +10,7 @@ class Server():
         self.re = ure.compile("GET (.*) HTTP")
 
     def run(self):
-        printLog('SERVER', ('listening on port %s' % self.port))
+        utils.printLog('SERVER', ('listening on port %s' % self.port))
         addr = usocket.getaddrinfo('0.0.0.0', self.port)[0][-1]
         socket = usocket.socket()
         socket.bind(addr)
@@ -18,21 +18,21 @@ class Server():
 
         while True:
             cl, addr = socket.accept()
-            printDebug('SERVER', 'client connected from %s:%s' % (addr[0], addr[1]))
+            utils.printDebug('SERVER', 'client connected from %s:%s' % (addr[0], addr[1]))
             (url, params, useHtml) = self.parseRequest(cl)
             if url:
-                printDebug('SERVER', 'GET %s %s (http:%s)' % (url, params, useHtml))
+                utils.printDebug('SERVER', 'GET %s %s (http:%s)' % (url, params, useHtml))
                 send = False
                 for controller in self.controllers:
                     response = controller.process(url, params)
                     if response:
-                        printDebug('SERVER', 'response: %s' % response)
+                        utils.printDebug('SERVER', 'response: %s' % response)
                         self.sendResponse(cl, response, 200, useHtml)
                         send = True
                         break
                 if not send:
                     response = self.error(101, "Not supported")
-                    printDebug('SERVER', 'response: %s' % response)
+                    utils.printDebug('SERVER', 'response: %s' % response)
                     self.sendResponse(cl, response, 404, useHtml)
             else:
                 self.sendResponse(cl, 'can not parse request', 404, useHtml)
@@ -61,7 +61,7 @@ class Server():
                 (url, params) = self.parseUrl(match.group(1))
             useHtml = useHtml or 'HOST:' in line
         if url == None:
-            printDebug('SERVER', 'can not parse request')
+            utils.printDebug('SERVER', 'can not parse request')
         return (url, params, useHtml)
 
     def parseUrl(self, url):
