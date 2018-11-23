@@ -7,21 +7,24 @@ import utils
 import utime
 
 _MAX_SPEED = 100
+_MAX_LEDS = 180
 _CONFIG_FILE = "animator.data"
 
 class AnimatorServerController():
     def __init__(self, np):
         self.np = np
+        self.np.buf = bytearray([0] * (_MAX_LEDS * 3))
+        self.np.write()
+        self.resetConfig()
+        self.config = utils.readJson(_CONFIG_FILE) or self.config
+        self.np.n = self.config['leds']
+        self.powerOffIfNeeded()
         self.animations = []
         self.animations.append(rainbow_animation.RainbowAnimation(np))
         self.animations.append(strip_animation.StripAnimation(np))
         self.animations.append(full_smooth_transition_animation.FullSmoothTransitionAnimation(np))
         self.tickCount = 0
         self.lastChangedAnimation = utime.ticks_ms()
-        self.resetConfig()
-        self.config = utils.readJson(_CONFIG_FILE) or self.config
-        self.np.n = self.config['leds']
-        self.powerOffIfNeeded()
 
     def name(self):
         return 'animator'
@@ -53,7 +56,7 @@ class AnimatorServerController():
                     self.config['current_animation'] = uos.urandom(1)[0] % len(self.animations)
                 else:
                     self.config['current_animation'] = value
-            elif key == 'LEDS' and value > 0:
+            elif key == 'LEDS' and 2 <= value and value <= _MAX_LEDS:
                 self.config['leds'] = value
                 self.np.n = value
             elif key == 'SECONDS_PER_ANIMATION' and value > 0:
