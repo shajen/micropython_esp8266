@@ -20,6 +20,7 @@ class AnimatorServerController():
         self.lastChangedAnimation = utime.ticks_ms()
         self.resetConfig()
         self.config = utils.readJson(_CONFIG_FILE) or self.config
+        self.np.n = self.config['leds']
         self.powerOffIfNeeded()
 
     def name(self):
