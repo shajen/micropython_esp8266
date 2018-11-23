@@ -64,3 +64,6 @@ def readJson(file):
     except:
         printDebug("JSON", "read json from {} failed".format(file))
         return None
+
+def jsonResponse(status, message):
+    return ujson.dumps({"status": status, "message": message})

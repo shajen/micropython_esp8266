@@ -31,11 +31,12 @@ class Server():
                         send = True
                         break
                 if not send:
-                    response = self.error(101, "Not supported")
+                    response = utils.jsonResponse(404, "Not found")
                     utils.printDebug('SERVER', 'response: %s' % response)
                     self.sendResponse(cl, response, 404, useHtml)
             else:
-                self.sendResponse(cl, 'can not parse request', 404, useHtml)
+                response = utils.jsonResponse(400, "Bad Request")
+                self.sendResponse(cl, response, 400, useHtml)
 
     def sendResponse(self, cl, response, status, useHtml):
         response = response.rstrip() + "\r\n"
@@ -65,7 +66,12 @@ class Server():
             if url == None:
                 utils.printDebug('SERVER', 'can not parse request')
         except:
+            while True:
+               line = cl_file.readline().decode("utf-8").upper() ### TODO: fix it
+               if not line or line == '\r\n':
+                   break
             utils.printDebug('SERVER', 'exception during parse request')
+            useHtml = True
         return (url, params, useHtml)
 
     def parseUrl(self, url):
@@ -78,6 +84,3 @@ class Server():
 
     def uniteUrl(self, url):
         return url if url.endswith('/') else url + '/'
-
-    def error(self, number, message):
-        return ujson.dumps({"status": number, "message": message})
