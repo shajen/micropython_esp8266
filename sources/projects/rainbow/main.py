@@ -25,7 +25,7 @@ def timeout1hours(timer):
 timeout10minutes(None)
 
 tim1 = machine.Timer(0)
-tim1.init(period=10, mode=machine.Timer.PERIODIC, callback=timeoutTick)
+tim1.init(period=1, mode=machine.Timer.PERIODIC, callback=timeoutTick)
 tim3 = machine.Timer(2)
 tim3.init(period=600000, mode=machine.Timer.PERIODIC, callback=timeout10minutes)
 tim4 = machine.Timer(3)

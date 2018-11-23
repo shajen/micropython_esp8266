@@ -3,6 +3,7 @@ import utime
 import ntptime
 import machine
 import socket
+import ujson
 
 def printLog(label, message):
     year, month, day, _, hour, minute, second, ms = machine.RTC().datetime()
@@ -47,3 +48,19 @@ def chipId():
     id = machine.unique_id()
     return '%02x%02x%02x' % (id[2], id[1], id[0])
 
+def writeJson(file, json):
+    f = open(file, "w")
+    f.write(ujson.dumps(json))
+    f.close()
+    printDebug("JSON", "write json to {} success".format(file))
+
+def readJson(file):
+    try:
+        f = open(file, "r")
+        data = f.read()
+        f.close()
+        printDebug("JSON", "read json from {} success".format(file))
+        return ujson.loads(data)
+    except:
+        printDebug("JSON", "read json from {} failed".format(file))
+        return None

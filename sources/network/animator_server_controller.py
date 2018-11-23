@@ -3,9 +3,11 @@ import rainbow_animation
 import strip_animation
 import ujson
 import uos
+import utils
 import utime
 
-MAX_SPEED = 100
+_MAX_SPEED = 100
+_CONFIG_FILE = "animator.data"
 
 class AnimatorServerController():
     def __init__(self, np):
@@ -14,22 +16,27 @@ class AnimatorServerController():
         self.animations.append(rainbow_animation.RainbowAnimation(np))
         self.animations.append(strip_animation.StripAnimation(np))
         self.animations.append(full_smooth_transition_animation.FullSmoothTransitionAnimation(np))
-        self.config = {'speed' : MAX_SPEED, 'animation' : -1, 'leds' : self.np.n, 'currentAnimation' : 0, 'secondsPerAnimation' : 60}
         self.tickCount = 0
         self.lastChangedAnimation = utime.ticks_ms()
+        self.resetConfig()
+        self.config = utils.readJson(_CONFIG_FILE) or self.config
+        self.powerOffIfNeeded()
 
     def name(self):
         return 'animator'
 
     def tick(self):
-        if utime.ticks_ms() - self.lastChangedAnimation > self.config['secondsPerAnimation'] * 1000 and self.config['animation'] == -1:
-            self.config['currentAnimation'] = (self.config['currentAnimation'] + 1) % len(self.animations)
+        if self.config['powered_on'] == 0:
+            return
+
+        if utime.ticks_ms() - self.lastChangedAnimation > self.config['seconds_per_animation'] * 1000 and self.config['animation'] == -1:
+            self.config['current_animation'] = (self.config['current_animation'] + 1) % len(self.animations)
             self.lastChangedAnimation = utime.ticks_ms()
 
-        if self.tickCount % (MAX_SPEED - self.config['speed'] + 1) == 0:
-            self.animations[self.config['currentAnimation']].tick()
+        if self.tickCount % (_MAX_SPEED - self.config['speed'] + 1) == 0:
+            self.animations[self.config['current_animation']].tick()
 
-        self.tickCount = (self.tickCount + 1) % MAX_SPEED
+        self.tickCount = (self.tickCount + 1) % _MAX_SPEED
 
     def process(self, url, params):
         if url == '/ANIMATOR/':
@@ -37,18 +44,35 @@ class AnimatorServerController():
         elif url == '/ANIMATOR/SET/' and "KEY" in params and "VALUE" in params:
             key = params['KEY']
             value = int(params['VALUE'])
-            if key == 'SPEED' and value in range(1, MAX_SPEED + 1):
+            if key == 'SPEED' and value in range(1, _MAX_SPEED + 1):
                 self.config['speed'] = value
             elif key == 'ANIMATION' and value in range(-1, len(self.animations)):
                 self.config['animation'] = value
                 if value == -1:
-                    self.config['currentAnimation'] = uos.urandom(1)[0] % len(self.animations)
+                    self.config['current_animation'] = uos.urandom(1)[0] % len(self.animations)
                 else:
-                    self.config['currentAnimation'] = value
+                    self.config['current_animation'] = value
             elif key == 'LEDS' and value > 0:
                 self.config['leds'] = value
                 self.np.n = value
             elif key == 'SECONDS_PER_ANIMATION' and value > 0:
-                self.config['secondsPerAnimation'] = value
+                self.config['seconds_per_animation'] = value
+            elif key == 'POWERED_ON' and (value == 0 or value == 1):
+                self.config['powered_on'] = value
+                self.powerOffIfNeeded()
+            utils.writeJson(_CONFIG_FILE, self.config)
+            return ujson.dumps(self.config)
+        elif url == '/ANIMATOR/RESET/':
+            self.resetConfig()
+            utils.writeJson(_CONFIG_FILE, self.config)
             return ujson.dumps(self.config)
         return None
+
+    def resetConfig(self):
+        SPEED = _MAX_SPEED - 10
+        self.config = {'powered_on' : 1, 'speed' : SPEED, 'animation' : -1, 'leds' : self.np.n, 'current_animation' : 0, 'seconds_per_animation' : 60}
+
+    def powerOffIfNeeded(self):
+        if self.config['powered_on'] == 0:
+            self.np.buf = bytearray([0] * (self.np.n * 3))
+            self.np.write()
