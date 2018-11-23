@@ -48,8 +48,9 @@ class StatusServerController():
             data['network']['wifi']['rssi'] = rssi
             data['controllers'] = [c.name() for c in self.controllers] + [self.name()]
             return ujson.dumps(data)
-        elif url == '/REBOOT/':
-            machine.reset()
+        elif url == '/REBOOT/' or url == '/RESET/':
+            machine.Timer(0).init(period=1000, mode=machine.Timer.PERIODIC, callback=lambda t: machine.reset())
+            return utils.jsonResponse(200, "Board will be restarted in a few seconds")
 
     def ssidAndRssi(self):
         wlan = network.WLAN(network.STA_IF)
