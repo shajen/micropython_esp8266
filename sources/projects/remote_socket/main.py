@@ -10,7 +10,7 @@ def timeout10minutes():
     utils.syncDatetime()
 
 tim0 = machine.Timer(0)
-tim0.init(period=600000, mode=Timer.PERIODIC, callback=lambda t: timeout10minutes())
+tim0.init(period=600000, mode=machine.Timer.PERIODIC, callback=lambda t: timeout10minutes())
 timeout10minutes()
 
 pinServerController = pin_server_controller.PinServerController()

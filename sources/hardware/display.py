@@ -9,7 +9,7 @@ PHASES = 2
 PHASE_REPEAT = 5
 
 class Display():
-    def __init__(self, i2c, devices):
+    def __init__(self, i2c, temperatureSensor):
         (ip, _, _, _) = network.WLAN(network.STA_IF).ifconfig()
         addresses = i2c.scan()
         if (len(addresses) == 1):
@@ -18,7 +18,7 @@ class Display():
             self.lcd.write('Bolomajster', lcd_i2c.LCD_LINE_1)
             self.lcd.write(ip, lcd_i2c.LCD_LINE_2)
             self.count = 0
-            self.devices = devices
+            self.temperatureSensor = temperatureSensor
             self.wlan = network.WLAN(network.STA_IF)
         else:
             utils.printDebug("DISPLAY", 'not found')
@@ -61,7 +61,7 @@ class Display():
         return '%02d:%02d:%02d' % (tm[3], tm[4], tm[5])
 
     def temperatures(self):
-        return " ".join('%.1f' % t for t in self.devices.getExternalTemperatures())
+        return " ".join('%.1f' % t for t in self.temperatureSensor.getExternalTemperatures())
 
     def update(self):
         if not self.lcd:

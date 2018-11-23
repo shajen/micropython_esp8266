@@ -4,9 +4,9 @@ import machine
 import onewire
 import utils
 
-class Devices:
-    def __init__(self):
-        self.dallas = ds18x20.DS18X20(onewire.OneWire(machine.Pin(config.DALLAS_PIN)))
+class TemperatureSensor:
+    def __init__(self, pin):
+        self.dallas = ds18x20.DS18X20(onewire.OneWire(pin))
         self.externalTemperatures = {}
 
     def getExternalTemperatures(self):
@@ -21,11 +21,11 @@ class Devices:
         self.externalTemperatures = {}
         roms = self.dallas.scan()
         try:
-            utils.printDebug("DEVICES", "read %d dallas sensors success" % len(roms))
+            utils.printDebug("TEMP", "read %d dallas sensors success" % len(roms))
             if roms:
                 self.dallas.convert_temp()
         except Exception as e:
-            utils.printDebug("DEVICES", "dallas exception %s" % e)
+            utils.printDebug("TEMP", "dallas exception %s" % e)
         for rom in roms:
             id = "".join("{:02x}".format(c) for c in rom)
             temperature = self.dallas.read_temp(rom)
@@ -33,10 +33,10 @@ class Devices:
                 self.externalTemperatures[id] = temperature
 
     def upload(self):
-        utils.printDebug("DEVICES", "start upload")
+        utils.printDebug("TEMP", "start upload")
         for (serial, temperature) in self.externalTemperatures.items():
             self.uploadTemperature(serial, temperature)
-        utils.printDebug("DEVICES", "finish upload")
+        utils.printDebug("TEMP", "finish upload")
 
     def uploadTemperature(self, serial, temperature):
         if temperature != 0.0:

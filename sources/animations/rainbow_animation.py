@@ -1,5 +1,4 @@
-import array
-import base_animation
+import animation_utils
 
 class RainbowAnimation():
     def __init__(self, np):
@@ -7,7 +6,7 @@ class RainbowAnimation():
         self.colors = []
         for i in range(0, self.np.n):
             h = i * (360 / self.np.n)
-            color = base_animation.hsvToRgb((h, 1.0, 1.0))
+            color = animation_utils.hsvToRgb((h, 1.0, 1.0))
             self.colors.append(color[1])
             self.colors.append(color[0])
             self.colors.append(color[2])

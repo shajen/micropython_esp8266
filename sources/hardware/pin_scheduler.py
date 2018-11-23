@@ -1,4 +1,3 @@
-import config
 import machine
 import utils
 import utime
@@ -7,14 +6,15 @@ SECONDS_IN_DAY = 24 * 60 * 60
 SCHEDULER_MARGIN = 30 * 60
 
 class PinScheduler():
-    def __init__(self):
-        self.pin = machine.Pin(config.SCHEDULER_PIN1, machine.Pin.OUT)
+    def __init__(self, pin, periods):
+        self.pin = pin
         self.pin.value(True)
+        self.periods = periods
 
     def update(self):
         secondsFromMidnight = utime.time() % SECONDS_IN_DAY
         state = False
-        for (startTime, spentTime)  in config.SCHEDULER_PIN1_PERIODS:
+        for (startTime, spentTime) in periods:
             startTime = self.timeToSecondsFromMidnight(startTime)
             if startTime <= secondsFromMidnight and secondsFromMidnight <= startTime + spentTime:
                 state = True
@@ -23,7 +23,7 @@ class PinScheduler():
 
     def isTimeNearScheduler(self):
         secondsFromMidnight = utime.time() % SECONDS_IN_DAY
-        for (startTime, spentTime)  in SCHEDULER_PIN1_PERIODS:
+        for (startTime, spentTime) in periods:
             startTime = self.timeToSecondsFromMidnight(startTime)
             if startTime - SCHEDULER_MARGIN <= secondsFromMidnight and secondsFromMidnight <= startTime + SCHEDULER_MARGIN:
                 return True

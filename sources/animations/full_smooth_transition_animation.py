@@ -1,4 +1,4 @@
-import base_animation
+import animation_utils
 import math
 import uos
 
@@ -19,6 +19,6 @@ class FullSmoothTransitionAnimation():
         self.setLeds()
 
     def setLeds(self):
-        (r, g, b) = base_animation.hsvToRgb((self.currentH, 1.0, 1.0))
+        (r, g, b) = animation_utils.hsvToRgb((self.currentH, 1.0, 1.0))
         self.np.buf = bytearray([r, g, b] * self.np.n)
         self.np.write()

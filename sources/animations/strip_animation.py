@@ -1,4 +1,4 @@
-import base_animation
+import animation_utils
 import math
 import uos
 
@@ -30,7 +30,7 @@ class StripAnimation():
         self.setLeds(self.lastLed, self.lastLed + self.ledsPerStep)
 
     def setLeds(self, _from, _to):
-        (r, g, b) = base_animation.hsvToRgb((self.currentH, 1.0, 1.0))
+        (r, g, b) = animation_utils.hsvToRgb((self.currentH, 1.0, 1.0))
         tmp = [0, 0, 0] * _from + [r, g , b] * (_to - _from + 1) + [0, 0, 0] * (self.np.n - _to)
         self.np.buf = bytearray(tmp)
         self.np.write()

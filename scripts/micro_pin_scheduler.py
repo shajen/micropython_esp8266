@@ -8,12 +8,12 @@ FLASH_COMMAND=micro_remote_file.sh
 pushd "$DIR/../sources"
 
 eval $FLASH_COMMAND boot.py
-eval $FLASH_COMMAND pin_scheduler/main.py
-eval $FLASH_COMMAND pin_scheduler.py
+eval $FLASH_COMMAND projects/pin_scheduler/main.py
+eval $FLASH_COMMAND hardware/pin_scheduler.py
 eval $FLASH_COMMAND config.py
 eval $FLASH_COMMAND utils.py
-eval $FLASH_COMMAND devices.py
-eval $FLASH_COMMAND server.py
-eval $FLASH_COMMAND status_server_controller.py
+eval $FLASH_COMMAND hardware/temperature_sensor.py
+eval $FLASH_COMMAND network/server.py
+eval $FLASH_COMMAND network/status_server_controller.py
 
 popd

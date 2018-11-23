@@ -1,5 +1,5 @@
 import config
-import devices
+import temperature_sensor
 import display
 import machine
 import server
@@ -11,17 +11,17 @@ utils.printLog("NODEMCU", "thermometer boot up")
 
 i2c = machine.I2C(scl=machine.Pin(config.I2C_SCL_PIN), sda=machine.Pin(config.I2C_SDA_PIN), freq=config.I2C_CLOCK)
 
-_devices = devices.Devices()
-_display = display.Display(i2c, _devices)
+_temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.DALLAS_PIN))
+_display = display.Display(i2c, _temperature_sensor)
 
 def timeout1second(timer):
-    _devices.update()
+    _temperature_sensor.update()
     hour = utime.localtime(utime.time())[3]
     _display.setBacklight(7 <= hour and hour <= 22)
     _display.update()
 
 def timeout1minute(timer):
-    _devices.upload()
+    _temperature_sensor.upload()
 
 def timeout10minutes(timer):
     utils.syncDatetime()
