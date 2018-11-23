@@ -38,6 +38,7 @@ class Server():
                 self.sendResponse(cl, 'can not parse request', 404, useHtml)
 
     def sendResponse(self, cl, response, status, useHtml):
+        response = response.rstrip() + "\r\n"
         if useHtml:
             cl.send('HTTP/1.1 %d OK\r\n' % status)
             cl.send('Content-Type: application/javascript\r\n')
@@ -51,17 +52,20 @@ class Server():
         url = None
         params = None
         useHtml = False
-        cl_file = cl.makefile('rwb', 0)
-        while True:
-            line = cl_file.readline().decode("utf-8").upper() ### TODO: fix it
-            if not line or line == '\r\n':
-                break
-            match = self.re.search(line)
-            if match:
-                (url, params) = self.parseUrl(match.group(1))
-            useHtml = useHtml or 'HOST:' in line
-        if url == None:
-            utils.printDebug('SERVER', 'can not parse request')
+        try:
+            cl_file = cl.makefile('rwb', 0)
+            while True:
+                line = cl_file.readline().decode("utf-8").upper() ### TODO: fix it
+                if not line or line == '\r\n':
+                    break
+                match = self.re.search(line)
+                if match:
+                    (url, params) = self.parseUrl(match.group(1))
+                useHtml = useHtml or 'HOST:' in line
+            if url == None:
+                utils.printDebug('SERVER', 'can not parse request')
+        except:
+            utils.printDebug('SERVER', 'exception during parse request')
         return (url, params, useHtml)
 
     def parseUrl(self, url):
