@@ -17,28 +17,32 @@ class Server():
         socket.listen(1)
 
         while True:
-            cl, addr = socket.accept()
-            utils.printDebug('SERVER', 'client connected from %s:%s' % (addr[0], addr[1]))
-            (url, params, useHtml) = self.parseRequest(cl)
-            if url:
-                utils.printDebug('SERVER', 'GET %s %s (http:%s)' % (url, params, useHtml))
-                send = False
-                for controller in self.controllers:
-                    response = controller.process(url, params)
-                    if response:
-                        utils.printDebug('SERVER', 'response: %s' % response)
-                        self.sendResponse(cl, response, 200, useHtml)
-                        send = True
-                        break
-                if not send:
-                    response = utils.jsonResponse(404, "Not found")
-                    utils.printDebug('SERVER', 'response: %s' % response)
-                    self.sendResponse(cl, response, 404, useHtml)
-            else:
-                response = utils.jsonResponse(400, "Bad Request")
-                self.sendResponse(cl, response, 400, useHtml)
+            try:
+                cl, addr = socket.accept()
+                cl.settimeout(2.5)
+                utils.printDebug('SERVER', 'client connected from %s:%s' % (addr[0], addr[1]))
+                (url, params, useHtml) = self.parseRequest(cl)
+                if url:
+                    utils.printDebug('SERVER', 'GET %s %s (http:%s)' % (url, params, useHtml))
+                    send = False
+                    for controller in self.controllers:
+                        response = controller.process(url, params)
+                        if response:
+                            self.sendResponse(cl, response, 200, useHtml)
+                            send = True
+                            break
+                    if not send:
+                        response = utils.jsonResponse(404, "Not found")
+                        self.sendResponse(cl, response, 404, useHtml)
+                else:
+                    response = utils.jsonResponse(400, "Bad Request")
+                    self.sendResponse(cl, response, 400, useHtml)
+            except Exception as e:
+                utils.printDebug('SERVER', 'exception %s' % str(e))
 
     def sendResponse(self, cl, response, status, useHtml):
+        utils.printDebug('SERVER', 'response status: %s' % status)
+        utils.printDebug('SERVER', 'response: %s' % response)
         response = response.rstrip() + "\r\n"
         if useHtml:
             cl.send('HTTP/1.1 %d OK\r\n' % status)
