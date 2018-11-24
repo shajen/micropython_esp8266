@@ -15,6 +15,6 @@ timeout10minutes()
 
 pinServerController = pin_server_controller.PinServerController()
 controllers = [pinServerController]
-statusController = status_server_controller.StatusServerController(controllers)
+statusController = status_server_controller.StatusServerController('Remote Socket', controllers)
 _server = server.Server(33455, controllers + [statusController])
 _server.run()

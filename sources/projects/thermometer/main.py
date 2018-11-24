@@ -42,6 +42,6 @@ tim3.init(period=600000, mode=machine.Timer.PERIODIC, callback=timeout10minutes)
 tim4 = machine.Timer(3)
 tim4.init(period=3600000, mode=machine.Timer.PERIODIC, callback=timeout1hours)
 
-statusController = status_server_controller.StatusServerController([])
+statusController = status_server_controller.StatusServerController('Thermometer', [])
 _server = server.Server(config.SERVER_PORT, [statusController])
 _server.run()

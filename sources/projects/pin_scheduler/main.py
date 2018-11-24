@@ -10,7 +10,7 @@ utils.printLog("NODEMCU", "water can boot up")
 
 _temperature_sensor = temperature_sensor.TemperatureSensor()
 pinScheduler = pin_scheduler.PinScheduler(machine.Pin(config.SCHEDULER_PIN1, machine.Pin.OUT), config.SCHEDULER_PIN1_PERIODS)
-statusController = status_server_controller.StatusServerController([])
+statusController = status_server_controller.StatusServerController('Pin Scheduler', [])
 _server = server.Server(config.SERVER_PORT, [statusController])
 
 def timeout1second(timer):

@@ -10,10 +10,11 @@ import utils
 import utime
 
 class StatusServerController():
-    def __init__(self, controllers):
+    def __init__(self, deviceType, controllers):
         self.wlan = network.WLAN()
         self.controllers = controllers
         self.adc = machine.ADC(1)
+        self.deviceType = deviceType
 
     def name(self):
         return 'status'
@@ -47,6 +48,7 @@ class StatusServerController():
             data['network']['wifi']['ssid'] = ssid
             data['network']['wifi']['rssi'] = rssi
             data['controllers'] = [c.name() for c in self.controllers] + [self.name()]
+            data['device_type'] = self.deviceType
             return ujson.dumps(data)
         elif url == '/REBOOT/' or url == '/RESET/':
             machine.Timer(0).init(period=1000, mode=machine.Timer.PERIODIC, callback=lambda t: machine.reset())
