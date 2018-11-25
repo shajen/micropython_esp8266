@@ -39,6 +39,8 @@ class Server():
                     self.sendResponse(cl, response, 400, useHtml)
             except Exception as e:
                 utils.printDebug('SERVER', 'exception %s' % str(e))
+                response = utils.jsonResponse(500, "Internal Server Error")
+                self.sendResponse(cl, response, 500, True)
 
     def sendResponse(self, cl, response, status, useHtml):
         utils.printDebug('SERVER', 'response status: %s' % status)
