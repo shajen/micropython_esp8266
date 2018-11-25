@@ -1,3 +1,9 @@
+try:
+    import pre_boot
+except Exception as e:
+    print('exception in pre_boot')
+    print(e)
+
 import machine
 import network
 import utime

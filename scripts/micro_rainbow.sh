@@ -9,6 +9,7 @@ pushd "$DIR/../sources"
 
 eval $FLASH_COMMAND boot.py
 eval $FLASH_COMMAND projects/rainbow/main.py
+eval $FLASH_COMMAND projects/rainbow/pre_boot.py
 eval $FLASH_COMMAND config.py
 eval $FLASH_COMMAND utils.py
 eval $FLASH_COMMAND network/server.py
