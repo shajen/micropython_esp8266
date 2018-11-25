@@ -2,10 +2,13 @@ import config
 import esp
 import machine
 import utils
+import ubinascii
 
 utils.printLog('ANIMATOR', 'fast set leds')
 _config = utils.readJson('animator.data')
 if _config:
     pin = machine.Pin(config.WS2811_PIN, machine.Pin.OUT)
-    esp.neopixel_write(pin, bytearray([0xff] * _config['leds'] * 3), 1)
+    bytes = ubinascii.unhexlify(_config['color'])
+    color = [bytes[1], bytes[0], bytes[2]]
+    esp.neopixel_write(pin, bytearray(color * _config['leds']), 1)
 utils.printLog('ANIMATOR', 'finish')
