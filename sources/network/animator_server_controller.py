@@ -58,33 +58,10 @@ class AnimatorServerController():
         if url == '/ANIMATOR/':
             return ujson.dumps(self.config)
         elif url == '/ANIMATOR/SET/' and "KEY" in params and "VALUE" in params:
-            key = params['KEY']
-            try:
-                value = int(params['VALUE'])
-            except:
-                pass
-            if key == 'SPEED' and value in range(1, _MAX_SPEED + 1):
-                self.config['speed'] = value
-            elif key == 'ANIMATION' and value in range(-1, len(self.animations)):
-                self.config['animation'] = value
-                if value == -1:
-                    self.config['current_animation'] = uos.urandom(1)[0] % len(self.animations)
-                else:
-                    self.config['current_animation'] = value
-            elif key == 'LEDS' and 2 <= value and value <= _MAX_LEDS:
-                self.config['leds'] = value
-                self.np.n = value
-            elif key == 'SECONDS_PER_ANIMATION' and value > 0:
-                self.config['seconds_per_animation'] = value
-            elif key == 'POWERED_ON' and (value == 0 or value == 1):
-                self.config['powered_on'] = value
-                self.powerOffIfNeeded()
-            elif key == 'USE_COLOR' and (value == 0 or value == 1):
-                self.config['use_color'] = value
-                self.forceRefreshColor = True
-            elif key == 'COLOR' and ure.match("^[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]$", params['VALUE']):
-                self.config['color'] = params['VALUE']
-                self.forceRefreshColor = True
+            keys = params['KEY'].split(',')
+            values = params['VALUE'].split(',')
+            for i in range(len(keys)):
+                self.setValue(keys[i], values[i])
             utils.writeJson(_CONFIG_FILE, self.config)
             return ujson.dumps(self.config)
         elif url == '/ANIMATOR/RESET/':
@@ -92,6 +69,35 @@ class AnimatorServerController():
             utils.writeJson(_CONFIG_FILE, self.config)
             return ujson.dumps(self.config)
         return None
+
+    def setValue(self, key, value):
+        utils.printDebug('ANIMATOR', 'SET %s=%s' %(key, value))
+        try:
+            value = int(value)
+        except:
+            pass
+        if key == 'SPEED' and value in range(1, _MAX_SPEED + 1):
+            self.config['speed'] = value
+        elif key == 'ANIMATION' and value in range(-1, len(self.animations)):
+            self.config['animation'] = value
+            if value == -1:
+                self.config['current_animation'] = uos.urandom(1)[0] % len(self.animations)
+            else:
+                self.config['current_animation'] = value
+        elif key == 'LEDS' and 2 <= value and value <= _MAX_LEDS:
+            self.config['leds'] = value
+            self.np.n = value
+        elif key == 'SECONDS_PER_ANIMATION' and value > 0:
+            self.config['seconds_per_animation'] = value
+        elif key == 'POWERED_ON' and (value == 0 or value == 1):
+            self.config['powered_on'] = value
+            self.powerOffIfNeeded()
+        elif key == 'USE_COLOR' and (value == 0 or value == 1):
+            self.config['use_color'] = value
+            self.forceRefreshColor = True
+        elif key == 'COLOR' and ure.match("^[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]$", value):
+            self.config['color'] = value
+            self.forceRefreshColor = True
 
     def resetConfig(self):
         SPEED = _MAX_SPEED - 10
