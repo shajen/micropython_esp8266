@@ -6,7 +6,7 @@ import ubinascii
 
 utils.printLog('ANIMATOR', 'fast set leds')
 _config = utils.readJson('animator.data')
-if _config:
+if _config and _config['powered_on'] and _config['use_color']:
     pin = machine.Pin(config.WS2811_PIN, machine.Pin.OUT)
     bytes = ubinascii.unhexlify(_config['color'])
     color = [bytes[1], bytes[0], bytes[2]]
