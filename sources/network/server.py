@@ -1,5 +1,4 @@
 import ujson
-import ure
 import usocket
 import utils
 
@@ -7,7 +6,6 @@ class Server():
     def __init__(self, port, controllers):
         self.port = port
         self.controllers = controllers
-        self.re = ure.compile("GET (.*) HTTP")
 
     def run(self):
         utils.printLog('SERVER', ('listening on port %s' % self.port))
@@ -38,9 +36,12 @@ class Server():
                     response = utils.jsonResponse(400, "Bad Request")
                     self.sendResponse(cl, response, 400, useHtml)
             except Exception as e:
-                utils.printDebug('SERVER', 'exception %s' % str(e))
-                response = utils.jsonResponse(500, "Internal Server Error")
-                self.sendResponse(cl, response, 500, True)
+                try:
+                    utils.printDebug('SERVER', 'exception %s' % str(e))
+                    response = utils.jsonResponse(500, "Internal Server Error")
+                    self.sendResponse(cl, response, 500, True)
+                except Exception as e:
+                    utils.printDebug('SERVER', 'exception during sendResponse %s' % str(e))
 
     def sendResponse(self, cl, response, status, useHtml):
         utils.printDebug('SERVER', 'response status: %s' % status)
@@ -65,18 +66,19 @@ class Server():
                 line = cl_file.readline().decode("utf-8").upper() ### TODO: fix it
                 if not line or line == '\r\n':
                     break
-                match = self.re.search(line)
-                if match:
-                    (url, params) = self.parseUrl(match.group(1))
+                if line.startswith('GET '):
+                    startPos = line.find(' ') + 1
+                    endPos = line.rfind(' ')
+                    (url, params) = self.parseUrl(line[startPos:endPos])
                 useHtml = useHtml or 'HOST:' in line
             if url == None:
                 utils.printDebug('SERVER', 'can not parse request')
-        except:
+        except Exception as e:
             while True:
                line = cl_file.readline().decode("utf-8").upper() ### TODO: fix it
                if not line or line == '\r\n':
                    break
-            utils.printDebug('SERVER', 'exception during parse request')
+            utils.printDebug('SERVER', 'exception during parse request: %s' % str(e))
             useHtml = True
         return (url, params, useHtml)
 
