@@ -41,6 +41,7 @@ class AnimatorServerController():
             self.np.buf = bytearray(color * self.np.n)
             self.np.write()
             return
+        self.forceRefreshColor = False
 
         if self.config['use_color']:
             return
@@ -91,6 +92,7 @@ class AnimatorServerController():
             self.config['seconds_per_animation'] = value
         elif key == 'POWERED_ON' and (value == 0 or value == 1):
             self.config['powered_on'] = value
+            self.forceRefreshColor = True
             self.powerOffIfNeeded()
         elif key == 'USE_COLOR' and (value == 0 or value == 1):
             self.config['use_color'] = value
