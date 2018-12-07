@@ -1,10 +1,12 @@
 import animation_utils
+import esp
 import math
 import uos
 
 class StripAnimation():
-    def __init__(self, np):
-        self.np = np
+    def __init__(self, pin, leds):
+        self.pin = pin
+        self.leds = leds
         self.lastLed = 1
         self.direction = 0
         self.ledsPerStep = 10
@@ -12,7 +14,7 @@ class StripAnimation():
         self.nextH = 0
 
     def tick(self):
-        if self.lastLed == (self.np.n - self.ledsPerStep) or self.lastLed == 0:
+        if self.lastLed == (self.leds - self.ledsPerStep) or self.lastLed == 0:
             self.direction = (self.direction + 1) % 2
 
         if self.currentH == self.nextH:
@@ -31,6 +33,5 @@ class StripAnimation():
 
     def setLeds(self, _from, _to):
         (r, g, b) = animation_utils.hsvToRgb((self.currentH, 1.0, 1.0))
-        tmp = [0, 0, 0] * _from + [r, g , b] * (_to - _from + 1) + [0, 0, 0] * (self.np.n - _to)
-        self.np.buf = bytearray(tmp)
-        self.np.write()
+        tmp = [0, 0, 0] * _from + [r, g , b] * (_to - _from + 1) + [0, 0, 0] * (self.leds - _to)
+        esp.neopixel_write(self.pin, bytearray(tmp), 1)

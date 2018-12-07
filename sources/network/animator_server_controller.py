@@ -7,22 +7,22 @@ import uos
 import utils
 import utime
 import ure
+import esp
 
 _MAX_SPEED = 100
 _MAX_LEDS = 180
 _CONFIG_FILE = "animator.data"
 
 class AnimatorServerController():
-    def __init__(self, np):
-        self.np = np
+    def __init__(self, pin):
+        self.pin = pin
         self.resetConfig()
         self.config = utils.readJson(_CONFIG_FILE) or self.config
-        self.np.n = self.config['leds']
         self.powerOffIfNeeded()
         self.animations = []
-        self.animations.append(rainbow_animation.RainbowAnimation(np))
-        self.animations.append(strip_animation.StripAnimation(np))
-        self.animations.append(full_smooth_transition_animation.FullSmoothTransitionAnimation(np))
+        self.animations.append(rainbow_animation.RainbowAnimation(pin, self.config['leds']))
+        self.animations.append(strip_animation.StripAnimation(pin, self.config['leds']))
+        self.animations.append(full_smooth_transition_animation.FullSmoothTransitionAnimation(pin, self.config['leds']))
         self.tickCount = 0
         self.lastChangedAnimation = utime.ticks_ms()
         self.forceRefreshColor = True
@@ -38,8 +38,7 @@ class AnimatorServerController():
             self.forceRefreshColor = False
             bytes = ubinascii.unhexlify(self.config['color'])
             color = [bytes[1], bytes[0], bytes[2]]
-            self.np.buf = bytearray(color * self.np.n)
-            self.np.write()
+            esp.neopixel_write(self.pin, bytearray(color * self.config['leds']), 1)
             return
         self.forceRefreshColor = False
 
@@ -87,7 +86,6 @@ class AnimatorServerController():
                 self.config['current_animation'] = value
         elif key == 'LEDS' and 2 <= value and value <= _MAX_LEDS:
             self.config['leds'] = value
-            self.np.n = value
         elif key == 'SECONDS_PER_ANIMATION' and value > 0:
             self.config['seconds_per_animation'] = value
         elif key == 'POWERED_ON' and (value == 0 or value == 1):
@@ -107,7 +105,7 @@ class AnimatorServerController():
             'powered_on' : 1,
             'speed' : SPEED,
             'animation' : -1,
-            'leds' : self.np.n,
+            'leds' : 60,
             'current_animation' : 0,
             'seconds_per_animation' : 60,
             'use_color' : 1,
@@ -116,5 +114,4 @@ class AnimatorServerController():
 
     def powerOffIfNeeded(self):
         if self.config['powered_on'] == 0:
-            self.np.buf = bytearray([0] * (self.np.n * 3))
-            self.np.write()
+            esp.neopixel_write(self.pin, bytearray([0] * 3 * self.config['leds']), 1)

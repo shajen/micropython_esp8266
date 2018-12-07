@@ -1,10 +1,12 @@
 import animation_utils
 import math
 import uos
+import esp
 
 class FullSmoothTransitionAnimation():
-    def __init__(self, np):
-        self.np = np
+    def __init__(self, pin, leds):
+        self.pin = pin
+        self.leds = leds
         self.currentH = 0
         self.nextH = 0
 
@@ -20,5 +22,4 @@ class FullSmoothTransitionAnimation():
 
     def setLeds(self):
         (r, g, b) = animation_utils.hsvToRgb((self.currentH, 1.0, 1.0))
-        self.np.buf = bytearray([r, g, b] * self.np.n)
-        self.np.write()
+        esp.neopixel_write(self.pin, bytearray([r, g, b] * self.leds), 1)

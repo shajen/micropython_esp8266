@@ -1,11 +1,13 @@
 import animation_utils
+import esp
 
 class RainbowAnimation():
-    def __init__(self, np):
-        self.np = np
+    def __init__(self, pin, leds):
+        self.pin = pin
+        self.leds = leds
         self.colors = []
-        for i in range(0, self.np.n):
-            h = i * (360 / self.np.n)
+        for i in range(0, leds):
+            h = i * (360 / leds)
             color = animation_utils.hsvToRgb((h, 1.0, 1.0))
             self.colors.append(color[1])
             self.colors.append(color[0])
@@ -18,5 +20,4 @@ class RainbowAnimation():
         self.setLeds()
 
     def setLeds(self):
-        self.np.buf = bytearray(self.colors)
-        self.np.write()
+        esp.neopixel_write(self.pin, bytearray(self.colors), 1)

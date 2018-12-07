@@ -1,15 +1,13 @@
 import animator_server_controller
 import config
 import machine
-import neopixel
 import server
 import status_server_controller
 import utils
 
 utils.printLog("NODEMCU", "animator boot up")
 
-np = neopixel.NeoPixel(machine.Pin(config.WS2811_PIN), 60)
-animatorServerController = animator_server_controller.AnimatorServerController(np)
+animatorServerController = animator_server_controller.AnimatorServerController(machine.Pin(config.WS2811_PIN, machine.Pin.OUT))
 statusController = status_server_controller.StatusServerController('Animator', [animatorServerController])
 
 def timeoutTick(timer):
