@@ -6,10 +6,13 @@ import uos
 class StripAnimation():
     def __init__(self, pin, leds):
         self.pin = pin
-        self.leds = leds
+        self.setup(leds)
+
+    def setup(self, leds):
+        self.ledsPerStep = 10
+        self.leds = max(leds, self.ledsPerStep + 1)
         self.lastLed = 1
         self.direction = 0
-        self.ledsPerStep = 10
         self.currentH = 0
         self.nextH = 0
 

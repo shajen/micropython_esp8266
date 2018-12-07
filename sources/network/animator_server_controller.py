@@ -26,6 +26,7 @@ class AnimatorServerController():
         self.tickCount = 0
         self.lastChangedAnimation = utime.ticks_ms()
         self.forceRefreshColor = True
+        self.forceRefreshLeds = 0
 
     def name(self):
         return 'animator'
@@ -41,6 +42,12 @@ class AnimatorServerController():
             esp.neopixel_write(self.pin, bytearray(color * self.config['leds']), 1)
             return
         self.forceRefreshColor = False
+
+        if self.forceRefreshLeds != 0:
+            esp.neopixel_write(self.pin, bytearray([0] * 3 * self.forceRefreshLeds), 1)
+            for animation in self.animations:
+                animation.setup(self.config['leds'])
+            self.forceRefreshLeds = 0
 
         if self.config['use_color']:
             return
@@ -84,8 +91,10 @@ class AnimatorServerController():
                 self.config['current_animation'] = uos.urandom(1)[0] % len(self.animations)
             else:
                 self.config['current_animation'] = value
-        elif key == 'LEDS' and 2 <= value and value <= _MAX_LEDS:
+        elif key == 'LEDS' and 2 <= value and value <= _MAX_LEDS and self.config['leds'] != value:
+            tmp = self.config['leds']
             self.config['leds'] = value
+            self.forceRefreshLeds = tmp
         elif key == 'SECONDS_PER_ANIMATION' and value > 0:
             self.config['seconds_per_animation'] = value
         elif key == 'POWERED_ON' and (value == 0 or value == 1):

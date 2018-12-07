@@ -6,9 +6,12 @@ import esp
 class FullSmoothTransitionAnimation():
     def __init__(self, pin, leds):
         self.pin = pin
-        self.leds = leds
         self.currentH = 0
         self.nextH = 0
+        self.setup(leds)
+        
+    def setup(self, leds):
+        self.leds = leds
 
     def tick(self):
         if self.currentH == self.nextH:

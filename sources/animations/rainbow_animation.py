@@ -4,6 +4,9 @@ import esp
 class RainbowAnimation():
     def __init__(self, pin, leds):
         self.pin = pin
+        self.setup(leds)
+
+    def setup(self, leds):
         self.leds = leds
         self.colors = []
         for i in range(0, leds):
