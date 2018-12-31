@@ -11,7 +11,7 @@ class SonoffServerController():
             r.value(0)
             if l:
                 l.value(1)
-            s.irq(trigger=machine.Pin.IRQ_RISING, handler=lambda p, switch=switch:self.switchClicked(switch))
+            s.irq(trigger=machine.Pin.IRQ_FALLING, handler=lambda p, switch=switch:self.switchClicked(switch))
 
     def name(self):
         return 'sonoff'
@@ -29,17 +29,25 @@ class SonoffServerController():
             data[str(i)] = r.value()
         return ujson.dumps({'status': 0, 'data' : data})
 
+    def processSwitch(self, switch, mode):
+        (r, l, s) = switch
+        if mode == 'SWITCH':
+            r.value((r.value() + 1) % 2)
+        else:
+            r.value(1 if mode == 'ON' else 0)
+        if l:
+            l.value((value + 1) % 2)
+
     def process(self, url, params):
         if url == '/GPIO/':
             return self.getState()
         elif url == '/GPIO/SET/':
             try:
-                switch = self.switches[int(params['PIN'])]
-                (r, l, s) = switch
-                value = 1 if params['MODE'] == 'ON' else 0
-                r.value(value)
-                if l:
-                    l.value((value + 1) % 2)
+                if 'PIN' in params:
+                    self.processSwitch(self.switches[int(params['PIN'])], params['MODE'])
+                else:
+                    for switch in self.switches:
+                        self.processSwitch(switch, params['MODE'])
             except:
                 pass
             return self.getState()
