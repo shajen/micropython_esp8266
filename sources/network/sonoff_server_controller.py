@@ -27,7 +27,7 @@ class SonoffServerController():
         for i in range(len(self.switches)):
             (r, l, s) = self.switches[i]
             data[str(i)] = r.value()
-        return ujson.dumps({'data' : data})
+        return ujson.dumps({'status': 0, 'data' : data})
 
     def process(self, url, params):
         if url == '/GPIO/':
