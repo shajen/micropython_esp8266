@@ -8,6 +8,7 @@ FLASH_COMMAND=micro_remote_file.sh
 pushd "$DIR/../sources"
 
 #eval $FLASH_COMMAND boot.py
+eval $FLASH_COMMAND projects/sonoff/pre_boot.py
 eval $FLASH_COMMAND projects/sonoff/main.py
 eval $FLASH_COMMAND config.py
 eval $FLASH_COMMAND utils.py

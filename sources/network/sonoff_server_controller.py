@@ -3,32 +3,30 @@ import ujson
 import utime
 
 class SonoffServerController():
-    def __init__(self, relayPin, ledPin, switchPin):
-        self.relayPin = relayPin
-        self.ledPin = ledPin
-        self.switchPin = switchPin
+    def __init__(self, switches):
+        self.switches = switches
 
-        self.ledPin.value(1)
-        for i in range(1, 11):
-            self.ledPin.value((self.ledPin.value() + 1) % 2)
-            utime.sleep_ms(100)
-
-        self.relayPin.value(0)
-        self.ledPin.value(1)
-
-        switchPin.irq(trigger=machine.Pin.IRQ_RISING, handler=lambda p:self.switchClicked())
+        for switch in self.switches:
+            (r, l, s) = switch
+            r.value(0)
+            if l:
+                l.value(1)
+            s.irq(trigger=machine.Pin.IRQ_RISING, handler=lambda p, switch=switch:self.switchClicked(switch))
 
     def name(self):
         return 'sonoff'
 
-    def switchClicked(self):
-        self.relayPin.value((self.relayPin.value() + 1) % 2)
-        self.ledPin.value((self.ledPin.value() + 1) % 2)
+    def switchClicked(self, switch):
+        (r, l, s) = switch
+        r.value((r.value() + 1) % 2)
+        if l:
+            l.value((l.value() + 1) % 2)
 
     def getState(self):
-        data = {
-            "1" : self.relayPin.value()
-        }
+        data = {}
+        for i in range(len(self.switches)):
+            (r, l, s) = self.switches[i]
+            data[str(i)] = r.value()
         return ujson.dumps({'data' : data})
 
     def process(self, url, params):
@@ -36,11 +34,24 @@ class SonoffServerController():
             return self.getState()
         elif url == '/GPIO/SET/':
             try:
-                if params['PIN'] == '1':
-                    value = 1 if params['MODE'] == 'ON' else 0
-                    self.relayPin.value(value)
-                    self.ledPin.value((value + 1) % 2)
+                switch = self.switches[int(params['PIN'])]
+                (r, l, s) = switch
+                value = 1 if params['MODE'] == 'ON' else 0
+                r.value(value)
+                if l:
+                    l.value((value + 1) % 2)
             except:
                 pass
             return self.getState()
         return None
+
+__INSTANCE__ = None
+
+def initInstance(switches):
+    global __INSTANCE__
+    if not __INSTANCE__:
+        __INSTANCE__ = SonoffServerController(switches)
+
+def getInstance():
+    global __INSTANCE__
+    return __INSTANCE__
