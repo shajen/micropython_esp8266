@@ -5,7 +5,7 @@ import utils
 
 utils.printLog("NODEMCU", "thermometer low power boot up")
 
-_temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.DALLAS_PIN))
+_temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.D3))
 _temperature_sensor.update()
 _temperature_sensor.upload()
 

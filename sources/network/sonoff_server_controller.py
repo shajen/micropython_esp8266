@@ -1,6 +1,5 @@
 import machine
 import ujson
-import utime
 
 class SonoffServerController():
     def __init__(self, switches):
