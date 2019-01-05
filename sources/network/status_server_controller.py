@@ -13,7 +13,7 @@ class StatusServerController():
     def __init__(self, deviceType, controllers):
         self.wlan = network.WLAN()
         self.controllers = controllers
-        self.adc = machine.ADC(1)
+        #self.adc = machine.ADC(1)
         self.deviceType = deviceType
 
     def name(self):
@@ -25,10 +25,10 @@ class StatusServerController():
             gc.collect()
             data['nodemcu'] = {}
             data['nodemcu']['mem_free'] = gc.mem_free()
-            data['nodemcu']['flash_id'] = esp.flash_id()
+            #data['nodemcu']['flash_id'] = esp.flash_id()
             data['nodemcu']['chip_id'] = utils.chipId()
             data['nodemcu']['bootreason'] = machine.reset_cause()
-            data['nodemcu']['voltage'] = self.adc.read() / 1000.0
+            #data['nodemcu']['voltage'] = self.adc.read() / 1000.0
             data['python'] = {}
             data['python']['implementation'] = self.implementation()
             data['python']['version'] = sys.version
