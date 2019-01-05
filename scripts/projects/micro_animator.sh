@@ -1,15 +1,13 @@
 #!/bin/bash
 
-DIR=$(realpath $0)
-DIR=$(dirname $DIR)
-FLASH_COMMAND=micro_remote_file.sh
-#FLASH_COMMAND=micro_usb_file.sh
+ROOT_PATH=$(git rev-parse --show-toplevel)
+FLASH_COMMAND=$ROOT_PATH/scripts/tools/micro_remote_file.sh
 
-pushd "$DIR/../sources"
+pushd "${ROOT_PATH}/sources"
 
 eval $FLASH_COMMAND boot.py
-eval $FLASH_COMMAND projects/rainbow/main.py
-eval $FLASH_COMMAND projects/rainbow/pre_boot.py
+eval $FLASH_COMMAND projects/animator/main.py
+eval $FLASH_COMMAND projects/animator/pre_boot.py
 eval $FLASH_COMMAND config.py
 eval $FLASH_COMMAND utils.py
 eval $FLASH_COMMAND network/server.py

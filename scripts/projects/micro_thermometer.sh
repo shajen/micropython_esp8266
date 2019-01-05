@@ -1,11 +1,9 @@
 #!/bin/bash
 
-DIR=$(realpath $0)
-DIR=$(dirname $DIR)
-FLASH_COMMAND=micro_remote_file.sh
-#FLASH_COMMAND=micro_usb_file.sh
+ROOT_PATH=$(git rev-parse --show-toplevel)
+FLASH_COMMAND=$ROOT_PATH/scripts/tools/micro_remote_file.sh
 
-pushd "$DIR/../sources"
+pushd "${ROOT_PATH}/sources"
 
 eval $FLASH_COMMAND boot.py
 eval $FLASH_COMMAND projects/thermometer/main.py
