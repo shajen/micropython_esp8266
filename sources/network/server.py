@@ -54,7 +54,7 @@ class Server():
             await writer.awrite('Connection: Closed\r\n')
             await writer.awrite('\r\n')
         await writer.awrite(response)
-        await writer.aclose()
+        writer.aclose()
 
     async def parseRequest(self, reader):
         url = None
@@ -78,7 +78,10 @@ class Server():
         except Exception as e:
             while True:
                 line = await reader.readline()
-                if not line or line == '\r\n':
+                if not line:
+                    break
+                line = line.decode("utf-8").upper() ### TODO: fix it
+                if line == '\r\n':
                     break
             utils.printDebug('SERVER', 'exception during parse request: %s' % str(e))
             useHtml = True

@@ -56,7 +56,7 @@ class StatusServerController():
 
     def ssidAndRssi(self):
         wlan = network.WLAN(network.STA_IF)
-        return (wlan.config('essid'), wlan.config('dhcp_hostname'), wlan.status('rssi'))
+        return (wlan.config('essid'), wlan.config('dhcp_hostname'), 0)
 
     def datetime(self):
         year, month, day, _, hour, minute, second, ms = machine.RTC().datetime()
