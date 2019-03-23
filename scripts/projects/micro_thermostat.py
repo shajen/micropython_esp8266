@@ -12,5 +12,6 @@ eval $FLASH_COMMAND utils.py
 eval $FLASH_COMMAND network/server.py
 eval $FLASH_COMMAND hardware/temperature_sensor.py
 eval $FLASH_COMMAND network/status_server_controller.py
+eval $FLASH_COMMAND network/thermostat_server_controller.py
 
 popd

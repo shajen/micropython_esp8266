@@ -12,9 +12,12 @@ class TemperatureSensor:
     def getExternalTemperatures(self):
         return list(self.externalTemperatures.values())
 
+    def getExternalTemperaturesWithId(self):
+        return list(self.externalTemperatures.items())
+
     def getAverageExternalTemperature(self):
         if not self.externalTemperatures:
-            return 0.0
+            raise Exception('temperature sensors not found')
         return sum(self.externalTemperatures.values())/len(self.externalTemperatures)
 
     def update(self):
@@ -29,6 +32,7 @@ class TemperatureSensor:
         for rom in roms:
             id = "".join("{:02x}".format(c) for c in rom)
             temperature = self.dallas.read_temp(rom)
+            utils.printDebug("TEMP", "%s = %.2f" % (id, temperature))
             if temperature != 85.0:
                 self.externalTemperatures[id] = temperature
 
