@@ -4,10 +4,24 @@ import machine
 import onewire
 import utils
 
+_UPDATE_INTERVAL_MS = 1000
+_UPLOAD_INTERVAL_MS = 60000
+
 class TemperatureSensor:
     def __init__(self, pin):
+        utils.printLog('TEMPERATURE', 'init')
         self.dallas = ds18x20.DS18X20(onewire.OneWire(pin))
         self.externalTemperatures = {}
+        self._updateTimer = machine.Timer(-1)
+        self._uploadTimer = machine.Timer(-1)
+        self.update()
+        self._updateTimer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
+        self._uploadTimer.init(period=_UPLOAD_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.upload())
+
+    def __del__(self):
+        utils.printLog('TEMPERATURE', 'delete')
+        self._updateTimer.deinit()
+        self._uploadTimer.deinit()
 
     def getExternalTemperatures(self):
         return list(self.externalTemperatures.values())
@@ -24,23 +38,23 @@ class TemperatureSensor:
         self.externalTemperatures = {}
         roms = self.dallas.scan()
         try:
-            utils.printDebug("TEMP", "read %d dallas sensors success" % len(roms))
+            utils.printDebug("TEMPERATURE", "read %d dallas sensors success" % len(roms))
             if roms:
                 self.dallas.convert_temp()
         except Exception as e:
-            utils.printDebug("TEMP", "dallas exception %s" % e)
+            utils.printDebug("TEMPERATURE", "dallas exception %s" % e)
         for rom in roms:
             id = "".join("{:02x}".format(c) for c in rom)
             temperature = self.dallas.read_temp(rom)
-            utils.printDebug("TEMP", "%s = %.2f" % (id, temperature))
+            utils.printDebug("TEMPERATURE", "%s = %.2f" % (id, temperature))
             if temperature != 85.0:
                 self.externalTemperatures[id] = temperature
 
     def upload(self):
-        utils.printDebug("TEMP", "start upload")
+        utils.printDebug("TEMPERATURE", "start upload")
         for (serial, temperature) in self.externalTemperatures.items():
             self.uploadTemperature(serial, temperature)
-        utils.printDebug("TEMP", "finish upload")
+        utils.printDebug("TEMPERATURE", "finish upload")
 
     def uploadTemperature(self, serial, temperature):
         if temperature != 0.0:
