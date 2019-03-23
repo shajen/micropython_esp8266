@@ -30,6 +30,13 @@ def syncDatetime():
             printLog('NTP', 'ERROR')
     machine.reset()
 
+def createSyncDateTimeTimer(interval_ms = 60000, sync_on_start = True):
+    timer = machine.Timer(-1)
+    timer.init(period=interval_ms, mode=machine.Timer.PERIODIC, callback=lambda t: syncDatetime())
+    if sync_on_start:
+        syncDatetime()
+    return timer
+
 def httpGet(url):
     try:
         printDebug('HTTP', 'start GET %s' % url)

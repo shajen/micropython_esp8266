@@ -4,8 +4,12 @@ import utils
 
 class Server():
     def __init__(self, port, controllers):
+        utils.printLog('SERVER', 'init')
         self.port = port
         self.controllers = controllers
+
+    def __del__(self):
+        utils.printLog('SERVER', 'delete')
 
     def run(self):
         utils.printLog('SERVER', ('listening on port %s' % self.port))
