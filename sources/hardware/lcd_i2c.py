@@ -10,6 +10,8 @@ LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line
 LCD_LINE_3 = 0x94 # LCD RAM address for the 3rd line
 LCD_LINE_4 = 0xD4 # LCD RAM address for the 4th line
 
+LCD_LINES = [LCD_LINE_1, LCD_LINE_2, LCD_LINE_3, LCD_LINE_4]
+
 ENABLE = 0b00000100 # Enable bit
 
 # Timing constants
