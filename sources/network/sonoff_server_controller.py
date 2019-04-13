@@ -54,11 +54,12 @@ class SonoffServerController():
 
 __INSTANCE__ = None
 
-def initInstance(switches):
+def initInstance(*args, **kwargs):
     global __INSTANCE__
     if not __INSTANCE__:
-        __INSTANCE__ = SonoffServerController(switches)
-
+        __INSTANCE__ = SonoffServerController(*args, **kwargs)
+    return __INSTANCE__
+    
 def getInstance():
     global __INSTANCE__
     return __INSTANCE__

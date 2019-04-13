@@ -48,7 +48,7 @@ def waitForConnection(timeoutMs):
     startTimeMs = utime.ticks_ms()
     wlan = network.WLAN(network.STA_IF)
     while (startTimeMs + timeoutMs >= utime.ticks_ms() and not wlan.isconnected()):
-        machine.idle()
+        utime.sleep_ms(100)
     if wlan.isconnected():
         printLog('wlan connection succeeded')
     printLog('finish waitForConnection')

@@ -11,10 +11,14 @@ import utime
 
 class StatusServerController():
     def __init__(self, deviceType, controllers):
+        utils.printLog('STATUS', 'init')
         self.wlan = network.WLAN()
         self.controllers = controllers
         #self.adc = machine.ADC(1)
         self.deviceType = deviceType
+
+    def __del__(self):
+        utils.printLog('STATUS', 'delete')
 
     def name(self):
         return 'status'

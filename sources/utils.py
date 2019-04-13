@@ -21,7 +21,7 @@ def syncDatetime():
         try:
             printLog('NTP', '%d try' % i)
             ntptime.settime()
-            tm = utime.localtime(utime.time() + 1 * 60 * 60) # +2h
+            tm = utime.localtime(utime.time() + 2 * 60 * 60) # +2h
             tm = tm[0:3] + (0,) + tm[3:6] + (0,)
             machine.RTC().datetime(tm)
             printLog('NTP', 'success')
@@ -29,6 +29,13 @@ def syncDatetime():
         except:
             printLog('NTP', 'ERROR')
     machine.reset()
+
+def createSyncDateTimeTimer(interval_ms = 60000, sync_on_start = True):
+    timer = machine.Timer(-1)
+    timer.init(period=interval_ms, mode=machine.Timer.PERIODIC, callback=lambda t: syncDatetime())
+    if sync_on_start:
+        syncDatetime()
+    return timer
 
 def httpGet(url):
     try:
@@ -67,3 +74,9 @@ def readJson(file):
 
 def jsonResponse(status, message):
     return ujson.dumps({"status": status, "message": message})
+
+def str2bool(v):
+    return v.lower() in ("yes", "true", "t", "1")
+
+def str2float(v):
+    return float(v)

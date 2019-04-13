@@ -37,7 +37,7 @@ def waitForConnection(seconds=20):
     wlan = network.WLAN(network.STA_IF)
     startTime = utime.ticks_ms()
     while utime.ticks_ms() < startTime + seconds * 1000 and not wlan.isconnected():
-        utime.sleep_ms(10)
+        utime.sleep_ms(100)
     if wlan.isconnected():
         print('WLAN connection succeeded!')
     else:

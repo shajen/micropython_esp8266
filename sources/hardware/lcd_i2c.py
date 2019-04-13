@@ -1,4 +1,3 @@
-import config
 import utime as time
 
 LCD_WIDTH = 16   # Maximum characters per line
@@ -11,6 +10,8 @@ LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line
 LCD_LINE_3 = 0x94 # LCD RAM address for the 3rd line
 LCD_LINE_4 = 0xD4 # LCD RAM address for the 4th line
 
+LCD_LINES = [LCD_LINE_1, LCD_LINE_2, LCD_LINE_3, LCD_LINE_4]
+
 ENABLE = 0b00000100 # Enable bit
 
 # Timing constants
@@ -21,10 +22,7 @@ class LcdI2C():
     def __init__(self, i2c, address):
         self.i2c = i2c
         self.address = address
-        if config.BACKLIGHT:
-            self.backlight  = 0x08
-        else:
-            self.backlight = 0x00
+        self.backlight  = 0x08
         self.lcd_byte(0x33,LCD_CMD) # 110011 Initialise
         self.lcd_byte(0x32,LCD_CMD) # 110010 Initialise
         self.lcd_byte(0x06,LCD_CMD) # 000110 Cursor move direction
