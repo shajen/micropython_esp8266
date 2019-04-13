@@ -16,7 +16,10 @@ class Display():
         self._temperatureSensor = temperatureSensor
 
         for address in i2c.scan():
-            self._displays.append(segmental_display.SegmentalDisplay(i2c, address, 20, 4))
+            if address == 0x23:
+                self._displays.append(segmental_display.SegmentalDisplay(i2c, address, 20, 4))
+            else:
+                self._displays.append(segmental_display.SegmentalDisplay(i2c, address, 16, 2))
 
         (ip, _, _, _) = network.WLAN(network.STA_IF).ifconfig()
         for display in self._displays:
