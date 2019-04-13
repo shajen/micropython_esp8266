@@ -12,8 +12,8 @@ class TemperatureSensor:
         utils.printLog('TEMPERATURE', 'init')
         self.dallas = ds18x20.DS18X20(onewire.OneWire(pin))
         self.externalTemperatures = {}
-        self._updateTimer = machine.Timer(-1)
-        self._uploadTimer = machine.Timer(-1)
+        self._updateTimer = utils.timer()
+        self._uploadTimer = utils.timer()
         self.update()
         self._updateTimer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
         self._uploadTimer.init(period=_UPLOAD_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.upload())

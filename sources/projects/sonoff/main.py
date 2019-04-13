@@ -16,9 +16,9 @@ def timeout1seconds():
 def timeout10minutes():
     utils.syncDatetime()
 
-tim0 = machine.Timer(0)
+tim0 = utils.timer()
 tim0.init(period=1000, mode=machine.Timer.PERIODIC, callback=lambda t: timeout1seconds())
-tim1 = machine.Timer(1)
+tim1 = utils.timer()
 tim1.init(period=600000, mode=machine.Timer.PERIODIC, callback=lambda t: timeout10minutes())
 timeout10minutes()
 

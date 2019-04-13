@@ -80,3 +80,10 @@ def str2bool(v):
 
 def str2float(v):
     return float(v)
+
+__TIMER_COUNT = 0
+def timer():
+    global __TIMER_COUNT
+    __TIMER_COUNT += 1
+    printDebug('TIMER', 'create new (%d)' % __TIMER_COUNT)
+    return machine.Timer(__TIMER_COUNT)

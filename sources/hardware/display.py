@@ -27,7 +27,7 @@ class Display():
             display.setIp(ip)
             display.showInitialMessage()
 
-        self._updateTimer = machine.Timer(-1)
+        self._updateTimer = utils.timer()
         self._updateTimer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
 
     def __del__(self):

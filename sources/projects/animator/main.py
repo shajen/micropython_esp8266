@@ -18,9 +18,9 @@ def timeout10minutes(timer):
 
 timeout10minutes(None)
 
-tim1 = machine.Timer(0)
+tim1 = utils.timer()
 tim1.init(period=1, mode=machine.Timer.PERIODIC, callback=timeoutTick)
-tim3 = machine.Timer(2)
+tim3 = utils.timer()
 tim3.init(period=600000, mode=machine.Timer.PERIODIC, callback=timeout10minutes)
 
 _server = server.Server(config.SERVER_PORT, [statusController, animatorServerController])

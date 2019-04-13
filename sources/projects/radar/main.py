@@ -12,5 +12,5 @@ distanceSensor = vl53l0x.VL53L0X(i2c, 0x29)
 def timeout100ms(timer):
     utils.printLog("RADAR", distanceSensor.read())
 
-tim1 = machine.Timer(0)
+tim1 = utils.timer()
 tim1.init(period=100, mode=machine.Timer.PERIODIC, callback=timeout100ms)

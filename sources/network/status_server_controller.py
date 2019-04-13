@@ -55,7 +55,7 @@ class StatusServerController():
             data['device_type'] = self.deviceType
             return ujson.dumps(data)
         elif url == '/REBOOT/' or url == '/RESET/':
-            machine.Timer(0).init(period=1000, mode=machine.Timer.PERIODIC, callback=lambda t: machine.reset())
+            utils.timer().init(period=1000, mode=machine.Timer.PERIODIC, callback=lambda t: machine.reset())
             return utils.jsonResponse(200, "Board will be restarted in a few seconds")
 
     def ssidAndRssi(self):
