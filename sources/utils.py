@@ -39,10 +39,10 @@ def syncDatetime():
             tm = tm[0:3] + (0,) + tm[3:6] + (0,)
             machine.RTC().datetime(tm)
             printLog('NTP', 'success')
-            return
+            return True
         except:
             printLog('NTP', 'ERROR')
-    machine.reset()
+    return False
 
 def createSyncDateTimeTimer(interval_ms = 60000, sync_on_start = True):
     t = timer()
