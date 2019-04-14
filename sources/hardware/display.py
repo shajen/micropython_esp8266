@@ -30,12 +30,6 @@ class Display():
         self._updateTimer = utils.timer()
         self._updateTimer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
 
-    def __del__(self):
-        utils.printLog('DISPLAY', 'delete')
-        self._updateTimer.deinit()
-        for display in self._displays:
-            display.__del__()
-
     def _uptime(self):
         s = int(time.ticks_ms() / 1000)
         seconds = s % 60

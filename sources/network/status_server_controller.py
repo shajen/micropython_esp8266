@@ -17,9 +17,6 @@ class StatusServerController():
         self.adc = machine.ADC(1)
         self.deviceType = deviceType
 
-    def __del__(self):
-        utils.printLog('STATUS', 'delete')
-
     def name(self):
         return 'status'
 

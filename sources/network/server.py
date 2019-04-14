@@ -8,9 +8,6 @@ class Server():
         self.port = port
         self.controllers = controllers
 
-    def __del__(self):
-        utils.printLog('SERVER', 'delete')
-
     def run(self):
         utils.printLog('SERVER', ('listening on port %s' % self.port))
         addr = usocket.getaddrinfo('0.0.0.0', self.port)[0][-1]

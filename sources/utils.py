@@ -16,6 +16,20 @@ def printDebug(label, message):
     if config.DEBUG:
         printLog(label, message)
 
+__TIMERS = []
+def timer():
+    global __TIMERS
+    t = machine.Timer(len(__TIMERS))
+    __TIMERS.append(t)
+    printDebug('TIMER', 'create new (total: %d)' % len(__TIMERS))
+    return t
+
+def deleteTimers():
+    global __TIMERS
+    for t in __TIMERS:
+        printDebug('TIMER', 'delete')
+        t.deinit()
+
 def syncDatetime():
     for i in range(1, 4):
         try:
@@ -31,11 +45,11 @@ def syncDatetime():
     machine.reset()
 
 def createSyncDateTimeTimer(interval_ms = 60000, sync_on_start = True):
-    timer = machine.Timer(-1)
-    timer.init(period=interval_ms, mode=machine.Timer.PERIODIC, callback=lambda t: syncDatetime())
+    t = timer()
+    t.init(period=interval_ms, mode=machine.Timer.PERIODIC, callback=lambda t: syncDatetime())
     if sync_on_start:
         syncDatetime()
-    return timer
+    return t
 
 def httpGet(url):
     try:
@@ -80,10 +94,3 @@ def str2bool(v):
 
 def str2float(v):
     return float(v)
-
-__TIMER_COUNT = 0
-def timer():
-    global __TIMER_COUNT
-    __TIMER_COUNT += 1
-    printDebug('TIMER', 'create new (%d)' % __TIMER_COUNT)
-    return machine.Timer(__TIMER_COUNT)

@@ -18,11 +18,6 @@ class TemperatureSensor:
         self._updateTimer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
         self._uploadTimer.init(period=_UPLOAD_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.upload())
 
-    def __del__(self):
-        utils.printLog('TEMPERATURE', 'delete')
-        self._updateTimer.deinit()
-        self._uploadTimer.deinit()
-
     def getExternalTemperatures(self):
         return list(self.externalTemperatures.values())
 

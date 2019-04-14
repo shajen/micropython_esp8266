@@ -18,10 +18,6 @@ class ThermostatServerController():
         switch_pin.irq(trigger=machine.Pin.IRQ_FALLING | machine.Pin.IRQ_RISING, handler=lambda p: self._switch_clicked(p))
         utils.printLog('THERMOSTAT', 'config:\n%s' % (self._config))
 
-    def __del__(self):
-        utils.printLog('THERMOSTAT', 'delete')
-        self._timer.deinit()
-
     def name(self):
         return 'thermostat'
 
