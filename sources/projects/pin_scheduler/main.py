@@ -6,39 +6,17 @@ import server
 import status_server_controller
 import utils
 
-utils.printLog("NODEMCU", "water can boot up")
-
-_temperature_sensor = temperature_sensor.TemperatureSensor()
+utils.printLog("PIN_SCHEDULER", "boot up")
+_temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.D3))
 pinScheduler = pin_scheduler.PinScheduler(machine.Pin(config.D5, machine.Pin.OUT), [((19, 0, 0), 36)])
 statusController = status_server_controller.StatusServerController('Pin Scheduler', [])
 _server = server.Server(config.SERVER_PORT, [statusController])
 
-def timeout1second(timer):
-    _temperature_sensor.update()
-    pinScheduler.update()
-
-def timeout1minute(timer):
-    if not pinScheduler.isTimeNearScheduler():
-        _temperature_sensor.upload()
-
-def timeout10minutes(timer):
-    pass
-
-def timeout1hour(timer):
-    if not pinScheduler.isTimeNearScheduler():
-        utils.syncDatetime()
-
-timeout1minute(None)
-timeout10minutes(None)
-timeout1hour(None)
-
-tim1 = utils.timer()
-tim1.init(period=1000, mode=machine.Timer.PERIODIC, callback=timeout1second)
-tim2 = utils.timer()
-tim2.init(period=60000, mode=machine.Timer.PERIODIC, callback=timeout1minute)
-tim3 = utils.timer()
-tim3.init(period=600000, mode=machine.Timer.PERIODIC, callback=timeout10minutes)
-tim4 = utils.timer()
-tim4.init(period=3600000, mode=machine.Timer.PERIODIC, callback=timeout1hour)
-
-_server.run()
+try:
+    _server.run()
+except KeyboardInterrupt:
+    utils.printLog("PIN_SCHEDULER", "stopped by the user")
+    utils.deleteTimers()
+except Exception as e:
+    utils.printLog("PIN_SCHEDULER", "exception during server run: %s" % e)
+    machine.reboot()
