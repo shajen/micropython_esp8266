@@ -1,9 +1,12 @@
 import machine
+import network
 import ujson
+import utils
 
 class SonoffServerController():
-    def __init__(self, switches):
+    def __init__(self, switches, statusPin):
         self.switches = switches
+        self.statusPin = statusPin
 
         for switch in self.switches:
             (r, l, s) = switch
@@ -11,6 +14,13 @@ class SonoffServerController():
             if l:
                 l.value(1)
             s.irq(trigger=machine.Pin.IRQ_FALLING, handler=lambda p, switch=switch:self.switchClicked(switch))
+
+        self.timer = utils.timer()
+        self.timer.init(period=1000, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
+
+    def update(self):
+        isconnected = network.WLAN(network.STA_IF).isconnected()
+        self.statusPin.value(1 if not isconnected else 0)
 
     def name(self):
         return 'sonoff'
@@ -51,15 +61,3 @@ class SonoffServerController():
                 pass
             return self.getState()
         return None
-
-__INSTANCE__ = None
-
-def initInstance(*args, **kwargs):
-    global __INSTANCE__
-    if not __INSTANCE__:
-        __INSTANCE__ = SonoffServerController(*args, **kwargs)
-    return __INSTANCE__
-    
-def getInstance():
-    global __INSTANCE__
-    return __INSTANCE__
