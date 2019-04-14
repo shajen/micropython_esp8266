@@ -3,6 +3,7 @@
 ### BASH SCRIPTS SETTINGS ###
 IP='192.168.1.100' #IP of your device in your local network
 MICROPYTHON_CROSS_COMPILER='' #if not set, upload script wtihout compilation
+DEVICE='/dev/ttyUSB0' #port of your device
 PORT=8266 #webrepl port
 PASS='YOUR_PASSWORD' #webrepl password
 

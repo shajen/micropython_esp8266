@@ -1,4 +1,5 @@
 #!/bin/bash
 
-esptool.py --port /dev/ttyUSB0 --after hard_reset chip_id
-
+ROOT_PATH=$(git rev-parse --show-toplevel)
+source $ROOT_PATH/config
+esptool.py --port $DEVICE --after hard_reset chip_id

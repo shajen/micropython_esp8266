@@ -2,9 +2,9 @@
 
 COLOR='\033[0;31m'
 NC='\033[0m'
-DEVICE=/dev/ttyUSB0
 ROOT_PATH=$(git rev-parse --show-toplevel)
 FIRMWARE=esp32-20190125-v1.10.bin
+source $ROOT_PATH/config
 
 sleep 1
 echo -e "${COLOR}erase flash${NC}"
