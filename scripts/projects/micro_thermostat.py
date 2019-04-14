@@ -6,7 +6,6 @@ FLASH_COMMAND=$ROOT_PATH/scripts/tools/micro_remote_file.sh
 pushd "${ROOT_PATH}/sources"
 
 eval $FLASH_COMMAND boot.py
-eval $FLASH_COMMAND projects/thermostat/pre_boot.py
 eval $FLASH_COMMAND projects/thermostat/main.py
 eval $FLASH_COMMAND $ROOT_PATH/config
 eval $FLASH_COMMAND utils.py
