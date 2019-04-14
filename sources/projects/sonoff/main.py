@@ -25,5 +25,5 @@ timeout10minutes()
 sonoffServerController = sonoff_server_controller.getInstance()
 controllers = [sonoffServerController]
 statusController = status_server_controller.StatusServerController('Sonoff', controllers)
-_server = server.Server(33455, controllers + [statusController])
+_server = server.Server(utils.SERVER_PORT, controllers + [statusController])
 _server.run()

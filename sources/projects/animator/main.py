@@ -7,7 +7,7 @@ import utils
 
 utils.printLog("ANIMATOR", "boot up")
 utils.createSyncDateTimeTimer()
-animatorServerController = animator_server_controller.AnimatorServerController(machine.Pin(config.D4, machine.Pin.OUT))
+animatorServerController = animator_server_controller.AnimatorServerController(machine.Pin(config.ANIMATOR_PIN, machine.Pin.OUT))
 statusController = status_server_controller.StatusServerController('Animator', [animatorServerController])
 _server = server.Server(config.SERVER_PORT, [statusController, animatorServerController])
 

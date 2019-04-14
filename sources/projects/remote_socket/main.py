@@ -8,11 +8,11 @@ import utils
 
 utils.printLog("REMOTE_SOCKET", "boot up")
 utils.createSyncDateTimeTimer()
-_temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.D6))
-pinServerController = pin_server_controller.PinServerController([config.D1, config.D2, config.D5, config.D7, config.D8])
+_temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.DS18B20_PIN))
+pinServerController = pin_server_controller.PinServerController(config.REMOTE_SOCKET_PINS)
 controllers = [pinServerController]
 statusController = status_server_controller.StatusServerController('Remote Socket', controllers)
-_server = server.Server(33455, controllers + [statusController])
+_server = server.Server(utils.SERVER_PORT, controllers + [statusController])
 
 try:
     _server.run()
