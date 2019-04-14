@@ -6,26 +6,19 @@ import status_server_controller
 import temperature_sensor
 import utils
 
-utils.printLog("NODEMCU", "rstrip boot up")
-
+utils.printLog("REMOTE_SOCKET", "boot up")
+utils.createSyncDateTimeTimer()
 _temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.D6))
-
-def timeout1minute(timer):
-    _temperature_sensor.update()
-    _temperature_sensor.upload()
-
-def timeout10minutes(timer):
-    utils.syncDatetime()
-
-tim0 = utils.timer()
-tim0.init(period=60000, mode=machine.Timer.PERIODIC, callback=timeout1minute)
-tim1 = utils.timer()
-tim1.init(period=600000, mode=machine.Timer.PERIODIC, callback=lambda t: timeout10minutes())
-timeout1minute(None)
-timeout10minutes(None)
-
 pinServerController = pin_server_controller.PinServerController([config.D1, config.D2, config.D5, config.D7, config.D8])
 controllers = [pinServerController]
 statusController = status_server_controller.StatusServerController('Remote Socket', controllers)
 _server = server.Server(33455, controllers + [statusController])
-_server.run()
+
+try:
+    _server.run()
+except KeyboardInterrupt:
+    utils.printLog("REMOTE_SOCKET", "stopped by the user")
+    utils.deleteTimers()
+except Exception as e:
+    utils.printLog("REMOTE_SOCKET", "exception during server run: %s" % e)
+    machine.reboot()
