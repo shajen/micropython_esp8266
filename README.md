@@ -75,6 +75,34 @@ Clone the repository into your local machine. After that, update submodules.
 git submodule update --init
 ```
 
+### Configuration
+
+All settings are stored in [config](config) file. Settings that you need to change:
+
+Set correct IP. Changed:
+```
+IP='192.168.1.100'
+```
+to your IP.
+
+Set correct uart port. Replace:
+```
+DEVICE='/dev/ttyUSB0'
+```
+to your uart port.
+
+Set webrepl secure password (if you don't want to use default). Change:
+```
+PASS='YOUR_PASSWORD'
+```
+to your password.
+
+Set correct ssid and password. Change:
+```
+NETWORKS={"SSID_1":"PASSWORD_1","SSID_2":"PASSWORD_2"}
+```
+to your WiFi settings.
+
 ### Flashing firmware
 
 To flash your board with latest micropython firmware run follow command:
@@ -90,32 +118,6 @@ Choose any project and run scripts to deploy into the board. For example to run 
 ```
 scripts/projects/micro_animator.sh
 ```
-
-### Configuration
-
-Set correct IP in [micro_remote_file.sh](scripts/tools/micro_remote_file.sh). Changed:
-```
-IP=192.168.xxx.xxx
-```
-to your IP.
-
-Set correct uart port in [micro_reboot.sh](scripts/tools/micro_reboot.sh) and [micro_usb_file.sh](scripts/tools/micro_usb_file.sh). Replace:
-```
-/dev/ttyUSB0
-```
-to your uart port.
-
-Set webrepl secure password in [webrepl_cfg.py](sources/webrepl_cfg.py) and [micro_remote_file.sh](scripts/tools/micro_remote_file.sh). Change:
-```
-PASSWORD
-```
-to your password.
-
-Set correct ssid and password in [boot.py](sources/boot.py). Change:
-```
-NETWORKS = {"SSID_1": "PASSWORD_1", "SSID_2": "PASSWORD_2"}
-```
-to your WiFi settings.
 
 ## Contributing
 
