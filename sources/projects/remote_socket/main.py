@@ -12,7 +12,7 @@ _temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.DS
 pinServerController = pin_server_controller.PinServerController(config.REMOTE_SOCKET_PINS)
 controllers = [pinServerController]
 statusController = status_server_controller.StatusServerController('Remote Socket', controllers)
-_server = server.Server(utils.SERVER_PORT, controllers + [statusController])
+_server = server.Server(config.SERVER_PORT, controllers + [statusController])
 
 try:
     _server.run()
