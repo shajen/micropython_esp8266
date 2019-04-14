@@ -22,6 +22,10 @@ read -p "Press enter to continue"
 $ROOT_PATH/scripts/tools/micro_usb_file.sh "${ROOT_PATH}/sources/webrepl_cfg.py"
 
 sleep 3
+echo -e "${COLOR}write config${NC}"
+$ROOT_PATH/scripts/tools/micro_usb_file.sh "${ROOT_PATH}/config"
+
+sleep 3
 echo -e "${COLOR}write boot.py${NC}"
 read -p "Press enter to continue"
 $ROOT_PATH/scripts/tools/micro_usb_file.sh "${ROOT_PATH}/sources/boot.py"

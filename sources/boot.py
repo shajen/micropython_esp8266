@@ -27,7 +27,11 @@ def tryConnect(timeoutMs):
     connected = False
     while (startTimeMs + timeoutMs >= utime.ticks_ms() and not connected):
         try:
-            NETWORKS = {"SSID_1": "PASSWORD_1", "SSID_2": "PASSWORD_2"}
+            try:
+                from config import NETWORKS
+            except:
+                printLog('exception during import NETWORKS')
+                NETWORKS = {}
             network.WLAN(network.AP_IF).active(False)
             wlan = network.WLAN(network.STA_IF)
             wlan.active(True)
@@ -38,8 +42,9 @@ def tryConnect(timeoutMs):
                     printLog('Try to connect to %s' % ssid)
                     wlan.connect(ssid, NETWORKS[ssid])
                     connected = True
-        except:
-            printLog('Exception during scan!')
+        except Exception as e:
+            printLog('exception during connecting')
+            printLog(e)
             machine.reset()
     printLog('finish tryConnect')
 

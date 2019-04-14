@@ -1,0 +1,25 @@
+### do not use whitespace characters in variable assignemnt ###
+
+### BASH SCRIPTS SETTINGS ###
+IP='192.168.1.100' #IP of your device in your local network
+MICROPYTHON_CROSS_COMPILER='' #if not set, upload script wtihout compilation
+PORT=8266 #webrepl port
+PASS='YOUR_PASSWORD' #webrepl password
+
+### MICROPYTHON SETTINGS ###
+D0=16
+D1=5
+D2=4
+D3=0
+D4=2
+D5=14
+D6=12
+D7=13
+D8=15
+D9=3
+D10=1
+
+NETWORKS={"SSID_1":"PASSWORD_1","SSID_2":"PASSWORD_2"}
+UPLOADER_KEY='YOUR_API_KEY'
+SERVER_PORT=33455
+DEBUG=True
