@@ -20,9 +20,6 @@ class SegmentalDisplay():
         self._phase = 0
         self._lastLine = 0
 
-    def __del__(self):
-        utils.printLog('SEGMENTAL', 'delete')
-
     def setInitialMessage(self, initialMessage):
         self._initialMessage = initialMessage
 

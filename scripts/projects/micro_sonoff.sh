@@ -8,7 +8,7 @@ pushd "${ROOT_PATH}/sources"
 eval $FLASH_COMMAND boot.py
 eval $FLASH_COMMAND projects/sonoff/pre_boot.py
 eval $FLASH_COMMAND projects/sonoff/main.py
-eval $FLASH_COMMAND config.py
+eval $FLASH_COMMAND $ROOT_PATH/config
 eval $FLASH_COMMAND utils.py
 eval $FLASH_COMMAND network/server.py
 eval $FLASH_COMMAND network/sonoff_server_controller.py

@@ -7,7 +7,7 @@ pushd "${ROOT_PATH}/sources"
 
 eval $FLASH_COMMAND projects/thermometer_low_power/boot.py
 eval $FLASH_COMMAND projects/thermometer_low_power/main.py
-eval $FLASH_COMMAND config.py
+eval $FLASH_COMMAND $ROOT_PATH/config
 eval $FLASH_COMMAND utils.py
 eval $FLASH_COMMAND network/server.py
 eval $FLASH_COMMAND hardware/temperature_sensor.py

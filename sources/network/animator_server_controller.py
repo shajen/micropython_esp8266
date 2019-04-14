@@ -1,13 +1,14 @@
+import esp
 import full_smooth_transition_animation
+import machine
 import rainbow_animation
 import strip_animation
 import ubinascii
 import ujson
 import uos
+import ure
 import utils
 import utime
-import ure
-import esp
 
 _MAX_SPEED = 100
 _MAX_LEDS = 180
@@ -27,6 +28,8 @@ class AnimatorServerController():
         self.lastChangedAnimation = utime.ticks_ms()
         self.forceRefreshColor = True
         self.forceRefreshLeds = 0
+        self.timer = utils.timer()
+        self.timer.init(period=1, mode=machine.Timer.PERIODIC, callback=lambda t: self.tick())
 
     def name(self):
         return 'animator'

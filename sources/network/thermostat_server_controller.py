@@ -13,14 +13,10 @@ class ThermostatServerController():
         self._led_pin = led_pin
         self._config = utils.readJson(_CONFIG_FILE) or self._default_config()
         self._update()
-        self._timer = machine.Timer(-1)
+        self._timer = utils.timer()
         self._timer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self._update())
         switch_pin.irq(trigger=machine.Pin.IRQ_FALLING | machine.Pin.IRQ_RISING, handler=lambda p: self._switch_clicked(p))
         utils.printLog('THERMOSTAT', 'config:\n%s' % (self._config))
-
-    def __del__(self):
-        utils.printLog('THERMOSTAT', 'delete')
-        self._timer.deinit()
 
     def name(self):
         return 'thermostat'

@@ -10,11 +10,20 @@ class PinScheduler():
         self.pin = pin
         self.pin.value(True)
         self.periods = periods
+        self.updateTimer = utils.timer()
+        self.syncTimer = utils.timer()
+        self.updateTimer.init(period=1000, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
+        self.syncTimer.init(period=3600000, mode=machine.Timer.PERIODIC, callback=lambda t: self.sync())
+        self.sync()
+
+    def sync(self):
+        if not self.isTimeNearScheduler():
+            utils.syncDatetime()
 
     def update(self):
         secondsFromMidnight = utime.time() % SECONDS_IN_DAY
         state = False
-        for (startTime, spentTime) in periods:
+        for (startTime, spentTime) in self.periods:
             startTime = self.timeToSecondsFromMidnight(startTime)
             if startTime <= secondsFromMidnight and secondsFromMidnight <= startTime + spentTime:
                 state = True
@@ -23,7 +32,7 @@ class PinScheduler():
 
     def isTimeNearScheduler(self):
         secondsFromMidnight = utime.time() % SECONDS_IN_DAY
-        for (startTime, spentTime) in periods:
+        for (startTime, spentTime) in self.periods:
             startTime = self.timeToSecondsFromMidnight(startTime)
             if startTime - SCHEDULER_MARGIN <= secondsFromMidnight and secondsFromMidnight <= startTime + SCHEDULER_MARGIN:
                 return True

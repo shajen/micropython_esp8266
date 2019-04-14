@@ -2,9 +2,9 @@
 
 COLOR='\033[0;31m'
 NC='\033[0m'
-DEVICE=/dev/ttyUSB0
 ROOT_PATH=$(git rev-parse --show-toplevel)
 FIRMWARE=esp8266-20180511-v1.9.4.bin
+source $ROOT_PATH/config
 
 sleep 1
 echo -e "${COLOR}erase flash${NC}"
@@ -20,6 +20,10 @@ sleep 3
 echo -e "${COLOR}write webrepl_cfg.py${NC}"
 read -p "Press enter to continue"
 $ROOT_PATH/scripts/tools/micro_usb_file.sh "${ROOT_PATH}/sources/webrepl_cfg.py"
+
+sleep 3
+echo -e "${COLOR}write config${NC}"
+$ROOT_PATH/scripts/tools/micro_usb_file.sh "${ROOT_PATH}/config"
 
 sleep 3
 echo -e "${COLOR}write boot.py${NC}"
