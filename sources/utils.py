@@ -30,18 +30,29 @@ def deleteTimers():
         printDebug('TIMER', 'delete')
         t.deinit()
 
+def getTimeZone():
+    t = utime.time()
+    if utime.mktime((2019, 3, 31, 2, 0, 0, 0, 0)) <= t and t <= utime.mktime((2019, 10, 27, 3, 0, 0, 0, 0)):
+        return 2
+    elif utime.mktime((2020, 3, 29, 2, 0, 0, 0, 0)) <= t and t <= utime.mktime((2020, 10, 25, 3, 0, 0, 0, 0)):
+        return 2
+    elif utime.mktime((2021, 3, 28, 2, 0, 0, 0, 0)) <= t and t <= utime.mktime((2021, 10, 31, 3, 0, 0, 0, 0)):
+        return 2
+    return 1
+
 def syncDatetime():
     for i in range(1, 4):
         try:
             printLog('NTP', '%d try' % i)
             ntptime.settime()
-            tm = utime.localtime(utime.time() + 2 * 60 * 60) # +2h
+            tm = utime.localtime(utime.time() + getTimeZone() * 60 * 60)
             tm = tm[0:3] + (0,) + tm[3:6] + (0,)
             machine.RTC().datetime(tm)
             printLog('NTP', 'success')
             return True
-        except:
-            printLog('NTP', 'ERROR')
+        except Exception as e:
+            printLog('NTP', 'exception')
+            printLog('NTP', e)
     return False
 
 def createSyncDateTimeTimer(interval_ms = 60000, sync_on_start = True):
