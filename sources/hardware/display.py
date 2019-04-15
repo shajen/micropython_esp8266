@@ -10,7 +10,7 @@ _UPDATE_INTERVAL_MS = 1000
 
 class Display():
     def __init__(self, i2c, temperatureSensor, initialMessage):
-        utils.printLog('DISPLAY', 'init')
+        utils.printInfo('DISPLAY', 'init')
         self._displays = []
         self._wlan = network.WLAN(network.STA_IF)
         self._temperatureSensor = temperatureSensor

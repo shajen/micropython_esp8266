@@ -11,7 +11,7 @@ import utime
 
 class StatusServerController():
     def __init__(self, deviceType, controllers):
-        utils.printLog('STATUS', 'init')
+        utils.printInfo('STATUS', 'init')
         self.wlan = network.WLAN()
         self.controllers = controllers
         self.adc = machine.ADC(1)

@@ -9,7 +9,7 @@ _UPLOAD_INTERVAL_MS = 60000
 
 class TemperatureSensor:
     def __init__(self, pin):
-        utils.printLog('TEMPERATURE', 'init')
+        utils.printInfo('TEMPERATURE', 'init')
         self.dallas = ds18x20.DS18X20(onewire.OneWire(pin))
         self.externalTemperatures = {}
         self._updateTimer = utils.timer()
@@ -37,7 +37,7 @@ class TemperatureSensor:
             if roms:
                 self.dallas.convert_temp()
         except Exception as e:
-            utils.printDebug("TEMPERATURE", "dallas exception %s" % e)
+            utils.printWarn("TEMPERATURE", "dallas exception %s" % e)
         for rom in roms:
             id = "".join("{:02x}".format(c) for c in rom)
             temperature = self.dallas.read_temp(rom)

@@ -5,8 +5,8 @@ _PHASE_REPEAT = 5
 
 class SegmentalDisplay():
     def __init__(self, i2c, addresses, width, height):
-        utils.printLog('SEGMENTAL', 'init display on 0x%02X address' % addresses)
-        utils.printLog('SEGMENTAL', 'size %02dx%02d' %(width, height))
+        utils.printInfo('SEGMENTAL', 'init display on 0x%02X address' % addresses)
+        utils.printInfo('SEGMENTAL', 'size %02dx%02d' %(width, height))
         self._width = width
         self._height = height
         self._lcd = lcd_i2c.LcdI2C(i2c, addresses)

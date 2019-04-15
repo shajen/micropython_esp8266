@@ -6,7 +6,7 @@ import temperature_sensor
 import thermostat_server_controller
 import utils
 
-utils.printLog("THERMOSTAT", "boot up")
+utils.printInfo("THERMOSTAT", "boot up")
 utils.createSyncDateTimeTimer()
 _temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.DS18B20_PIN))
 _relay_pin = machine.Pin(config.THERMOSTAT_RELAY_PIN, machine.Pin.OUT)
@@ -20,8 +20,8 @@ _server = server.Server(config.SERVER_PORT, _controllers + [_statusController])
 try:
     _server.run()
 except KeyboardInterrupt:
-    utils.printLog("THERMOSTAT", "stopped by the user")
+    utils.printInfo("THERMOSTAT", "stopped by the user")
     utils.deleteTimers()
 except Exception as e:
-    utils.printLog("THERMOSTAT", "exception during server run: %s" % e)
+    utils.printWarn("THERMOSTAT", "exception during server run: %s" % e)
     machine.reboot()

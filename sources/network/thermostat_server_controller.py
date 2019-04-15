@@ -7,7 +7,7 @@ _UPDATE_INTERVAL_MS = 1000
 
 class ThermostatServerController():
     def __init__(self, temperature_sensor, relay_pin, switch_pin, led_pin):
-        utils.printLog('THERMOSTAT', 'init')
+        utils.printInfo('THERMOSTAT', 'init')
         self._temperature_sensor = temperature_sensor
         self._relay_pin = relay_pin
         self._led_pin = led_pin
@@ -16,7 +16,7 @@ class ThermostatServerController():
         self._timer = utils.timer()
         self._timer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self._update())
         switch_pin.irq(trigger=machine.Pin.IRQ_FALLING | machine.Pin.IRQ_RISING, handler=lambda p: self._switch_clicked(p))
-        utils.printLog('THERMOSTAT', 'config:\n%s' % (self._config))
+        utils.printInfo('THERMOSTAT', 'config:\n%s' % (self._config))
 
     def name(self):
         return 'thermostat'
@@ -37,8 +37,8 @@ class ThermostatServerController():
                     if 0.1 <= hysteresis and hysteresis <= 5.0:
                         self._config['hysteresis'] = hysteresis
             except Exception as e:
-                utils.printLog('THERMOSTAT', 'exception during process')
-                utils.printLog('THERMOSTAT', e)
+                utils.printWarn('THERMOSTAT', 'exception during process')
+                utils.printWarn('THERMOSTAT', e)
             utils.writeJson(_CONFIG_FILE, self._config)
             return self._get_state()
         return None
@@ -91,6 +91,6 @@ class ThermostatServerController():
                 elif temperature <= desired_temperature - hysteresis:
                     self._config['working_mode'] = 0
         except Exception as e:
-            utils.printLog('THERMOSTAT', 'exception during update')
-            utils.printLog('THERMOSTAT', e)
+            utils.printWarn('THERMOSTAT', 'exception during update')
+            utils.printWarn('THERMOSTAT', e)
         self._update_working_mode()

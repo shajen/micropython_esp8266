@@ -3,7 +3,7 @@ import machine
 import temperature_sensor
 import utils
 
-utils.printLog("NODEMCU", "thermometer low power boot up")
+utils.printInfo("NODEMCU", "thermometer low power boot up")
 
 _temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.DS18B20_PIN))
 _temperature_sensor.update()

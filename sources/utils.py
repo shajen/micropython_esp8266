@@ -5,16 +5,37 @@ import machine
 import socket
 import ujson
 
-def printLog(label, message):
-    year, month, day, _, hour, minute, second, ms = machine.RTC().datetime()
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    ENDC = '\033[0m'
-    print("[%s%d-%02d-%02d %02d:%02d:%02d:%03d%s] [%s%14s%s] %s" % (YELLOW, year, month, day, hour, minute, second, ms, ENDC, GREEN, label, ENDC, message))
+def printColor(label, message, labelColor):
+    timeColor = '\033[92m' #green
+    endc = '\033[0m'
+    if config.PRINT_FULL_DATETIME:
+        year, month, day, _, hour, minute, second, ms = machine.RTC().datetime()
+        print("[%s%d-%02d-%02d %02d:%02d:%02d:%03d%s] [%s%14s%s] %s" % (timeColor, year, month, day, hour, minute, second, ms, endc, labelColor, label, endc, message))
+    else:
+        ms = utime.ticks_ms()
+        seconds = ms / 1000
+        ms = ms % 1000
+        print("[%s% 5d.%03d%s] [%s%13s%s] %s" % (timeColor, seconds, ms, endc, labelColor, label, endc, message))
+
+def printError(label, message):
+    if config.VERBOSE_LEVEL <= 40:
+        printColor(label, message, '\033[91m') #red
+
+def printWarn(label, message):
+    if config.VERBOSE_LEVEL <= 30:
+        printColor(label, message, '\033[91m') #red
+
+def printInfo(label, message):
+    if config.VERBOSE_LEVEL <= 20:
+        printColor(label, message, '\033[38;5;208m') #orange
+
+def printVerbose(label, message):
+    if config.VERBOSE_LEVEL <= 15:
+        printColor(label, message, '\033[93m') #yellow
 
 def printDebug(label, message):
-    if config.DEBUG:
-        printLog(label, message)
+    if config.VERBOSE_LEVEL <= 10:
+        printColor(label, message, '\033[93m') #yellow
 
 __TIMERS = []
 def timer():
@@ -43,16 +64,16 @@ def getTimeZone():
 def syncDatetime():
     for i in range(1, 4):
         try:
-            printLog('NTP', '%d try' % i)
+            printInfo('NTP', '%d try' % i)
             ntptime.settime()
             tm = utime.localtime(utime.time() + getTimeZone() * 60 * 60)
             tm = tm[0:3] + (0,) + tm[3:6] + (0,)
             machine.RTC().datetime(tm)
-            printLog('NTP', 'success')
+            printInfo('NTP', 'success')
             return True
         except Exception as e:
-            printLog('NTP', 'exception')
-            printLog('NTP', e)
+            printWarn('NTP', 'exception')
+            printWarn('NTP', e)
     return False
 
 def createSyncDateTimeTimer(interval_ms = 60000, sync_on_start = True):
@@ -75,8 +96,8 @@ def httpGet(url):
         s.close()
         printDebug("HTTP", "finish GET")
     except Exception as e:
-        printDebug('HTTP', 'GET timeout %s' % url)
-        printDebug('HTTP', 'GET exception: %s' % e)
+        printWarn('HTTP', 'GET timeout %s' % url)
+        printWarn('HTTP', 'GET exception: %s' % e)
 
 def chipId():
     id = machine.unique_id()

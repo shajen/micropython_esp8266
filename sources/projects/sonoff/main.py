@@ -5,7 +5,7 @@ import sonoff_server_controller
 import status_server_controller
 import utils
 
-utils.printLog("SONOFF", "boot up")
+utils.printInfo("SONOFF", "boot up")
 utils.createSyncDateTimeTimer()
 relayPin1 = machine.Pin(config.SONOFF_RELAY1_PIN, machine.Pin.OUT)
 switchPin1 = machine.Pin(config.SONOFF_SWITCH1_PIN, machine.Pin.IN)
@@ -22,8 +22,8 @@ _server = server.Server(config.SERVER_PORT, controllers + [statusController])
 try:
     _server.run()
 except KeyboardInterrupt:
-    utils.printLog("SONOFF", "stopped by the user")
+    utils.printInfo("SONOFF", "stopped by the user")
     utils.deleteTimers()
 except Exception as e:
-    utils.printLog("SONOFF", "exception during server run: %s" % e)
+    utils.printWarn("SONOFF", "exception during server run: %s" % e)
     machine.reboot()

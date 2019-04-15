@@ -4,12 +4,12 @@ import utils
 
 class Server():
     def __init__(self, port, controllers):
-        utils.printLog('SERVER', 'init')
+        utils.printInfo('SERVER', 'init')
         self.port = port
         self.controllers = controllers
 
     def run(self):
-        utils.printLog('SERVER', ('listening on port %s' % self.port))
+        utils.printInfo('SERVER', ('listening on port %s' % self.port))
         addr = usocket.getaddrinfo('0.0.0.0', self.port)[0][-1]
         socket = usocket.socket()
         socket.bind(addr)
@@ -41,11 +41,11 @@ class Server():
                 self.sendResponse(cl, response, 400, useHtml)
         except Exception as e:
             try:
-                utils.printDebug('SERVER', 'exception %s' % str(e))
+                utils.printWarn('SERVER', 'exception %s' % str(e))
                 response = utils.jsonResponse(500, "Internal Server Error")
                 self.sendResponse(cl, response, 500, True)
             except Exception as e:
-                utils.printDebug('SERVER', 'exception during sendResponse %s' % str(e))
+                utils.printWarn('SERVER', 'exception during sendResponse %s' % str(e))
 
     def sendResponse(self, cl, response, status, useHtml):
         utils.printDebug('SERVER', 'response status: %s' % status)
@@ -82,7 +82,7 @@ class Server():
                 line = cl_file.readline().decode("utf-8").upper() ### TODO: fix it
                 if not line or line == '\r\n':
                     break
-            utils.printDebug('SERVER', 'exception during parse request: %s' % str(e))
+            utils.printWarn('SERVER', 'exception during parse request: %s' % str(e))
             useHtml = True
         return (url, params, useHtml)
 
