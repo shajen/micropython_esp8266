@@ -66,9 +66,11 @@ def httpGet(url):
     try:
         printDebug('HTTP', 'start GET %s' % url)
         _, _, host, path = url.split('/', 3)
+        addr = socket.getaddrinfo(host, 80)[0][-1]
+        printDebug('HTTP', 'IP: %s, PORT: %d' % addr)
         s = socket.socket()
         s.settimeout(3.0)
-        s.connect(('91.185.185.211', 80))
+        s.connect(addr)
         s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
         s.close()
         printDebug("HTTP", "finish GET")
