@@ -10,12 +10,11 @@ def printColor(label, message, labelColor):
     endc = '\033[0m'
     if config.PRINT_FULL_DATETIME:
         year, month, day, _, hour, minute, second, ms = machine.RTC().datetime()
-        print("[%s%d-%02d-%02d %02d:%02d:%02d:%03d%s] [%s%14s%s] %s" % (timeColor, year, month, day, hour, minute, second, ms, endc, labelColor, label, endc, message))
+        timeLabel = "[%s%d-%02d-%02d %02d:%02d:%02d:%03d%s]" % (timeColor, year, month, day, hour, minute, second, ms, endc)
     else:
         ms = utime.ticks_ms()
-        seconds = ms / 1000
-        ms = ms % 1000
-        print("[%s% 5d.%03d%s] [%s%13s%s] %s" % (timeColor, seconds, ms, endc, labelColor, label, endc, message))
+        timeLabel = "[%s% 5d.%03d%s]" % (timeColor, ms / 1000, ms % 1000, endc)
+    print("%s [%s%13s%s] %s" % (timeLabel, labelColor, label, endc, message))
 
 def printError(label, message):
     if config.VERBOSE_LEVEL <= 40:
