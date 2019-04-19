@@ -52,8 +52,8 @@ class SegmentalDisplay():
         (years, months, days, hours, minutes, seconds) = self._time
         lines = []
         lines.append(' '.join('%.1f' % t for t in self._temperatures))
-        lines.append('free %d, WiFi %i' % (self._freeMemory, self._wifiIsConnected))
         lines.append('time %02d:%02d:%02d' % (hours, minutes, seconds))
+        lines.append('free %d, WiFi %i' % (self._freeMemory, self._wifiIsConnected))
         lines.append('up %02d:%02d:%02d:%02d' % self._uptime)
 
         self._phase = (self._phase + 1) % _PHASE_REPEAT
