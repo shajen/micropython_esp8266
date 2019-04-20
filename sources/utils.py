@@ -75,7 +75,7 @@ def syncDatetime():
             printWarn('NTP', e)
     return False
 
-def createSyncDateTimeTimer(interval_ms = 60000, sync_on_start = True):
+def createSyncDateTimeTimer(interval_ms = 600000, sync_on_start = True):
     t = timer()
     t.init(period=interval_ms, mode=machine.Timer.PERIODIC, callback=lambda t: syncDatetime())
     if sync_on_start:
