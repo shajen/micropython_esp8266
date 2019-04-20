@@ -8,9 +8,10 @@ _UPDATE_INTERVAL_MS = 1000
 _UPLOAD_INTERVAL_MS = 60000
 
 class TemperatureSensor:
-    def __init__(self, pin):
+    def __init__(self, pin, mqttClient):
         utils.printInfo('TEMPERATURE', 'init')
         self.dallas = ds18x20.DS18X20(onewire.OneWire(pin))
+        self.mqttClient = mqttClient
         self.externalTemperatures = {}
         self._updateTimer = utils.timer()
         self._uploadTimer = utils.timer()
@@ -55,3 +56,4 @@ class TemperatureSensor:
         if temperature != 0.0:
             url = "http://monitor.shajen.pl/api/temp/add?serial=%s&temperature=%.2f&key=%s" % (serial, temperature, config.UPLOADER_KEY)
             utils.httpGet(url)
+            self.mqttClient.publishTemperature(serial, temperature)

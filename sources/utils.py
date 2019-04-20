@@ -5,36 +5,36 @@ import machine
 import socket
 import ujson
 
-def printColor(label, message, labelColor):
+__LOG_CALLBACK = None
+
+def printColor(verboseLevel, label, message, labelColor):
     timeColor = '\033[92m' #green
     endc = '\033[0m'
-    if config.PRINT_FULL_DATETIME:
+    if config.PRINT_FULL_DATETIME_IN_LOG:
         year, month, day, _, hour, minute, second, ms = machine.RTC().datetime()
-        timeLabel = "[%s%d-%02d-%02d %02d:%02d:%02d:%03d%s]" % (timeColor, year, month, day, hour, minute, second, ms, endc)
+        timeLabel = "%d-%02d-%02d %02d:%02d:%02d:%03d" % (year, month, day, hour, minute, second, ms)
     else:
         ms = utime.ticks_ms()
-        timeLabel = "[%s% 5d.%03d%s]" % (timeColor, ms / 1000, ms % 1000, endc)
-    print("%s [%s%13s%s] %s" % (timeLabel, labelColor, label, endc, message))
+        timeLabel = "% 5d.%03d" % (ms / 1000, ms % 1000)
+    if config.MQTT_PUBLISH_VERBOSE_LEVEL <= verboseLevel and __LOG_CALLBACK:
+        __LOG_CALLBACK(verboseLevel, label, message)
+    if config.VERBOSE_LEVEL <= verboseLevel:
+        print("[%s%s%s] [%s%13s%s] %s" % (timeColor, timeLabel, endc, labelColor, label, endc, message))
 
 def printError(label, message):
-    if config.VERBOSE_LEVEL <= 40:
-        printColor(label, message, '\033[91m') #red
+    printColor(40, label, message, '\033[91m') #red
 
 def printWarn(label, message):
-    if config.VERBOSE_LEVEL <= 30:
-        printColor(label, message, '\033[91m') #red
+    printColor(30, label, message, '\033[91m') #red
 
 def printInfo(label, message):
-    if config.VERBOSE_LEVEL <= 20:
-        printColor(label, message, '\033[38;5;208m') #orange
+    printColor(20, label, message, '\033[38;5;208m') #orange
 
 def printVerbose(label, message):
-    if config.VERBOSE_LEVEL <= 15:
-        printColor(label, message, '\033[93m') #yellow
+    printColor(15, label, message, '\033[93m') #yellow
 
 def printDebug(label, message):
-    if config.VERBOSE_LEVEL <= 10:
-        printColor(label, message, '\033[93m') #yellow
+    printColor(10, label, message, '\033[93m') #yellow
 
 __TIMERS = []
 def timer():
