@@ -21,5 +21,5 @@ except KeyboardInterrupt:
     utils.printInfo("REMOTE_SOCKET", "stopped by the user")
     utils.deleteTimers()
 except Exception as e:
-    utils.printWarn("REMOTE_SOCKET", "exception during server run: %s" % e)
+    utils.printWarn("REMOTE_SOCKET", "exception during mqtt client run: %s" % e)
     machine.reset()

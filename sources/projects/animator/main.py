@@ -17,5 +17,5 @@ except KeyboardInterrupt:
     utils.printInfo("ANIMATOR", "stopped by the user")
     utils.deleteTimers()
 except Exception as e:
-    utils.printWarn("ANIMATOR", "exception during server run: %s" % e)
+    utils.printWarn("ANIMATOR", "exception during mqtt client run: %s" % e)
     machine.reboot()

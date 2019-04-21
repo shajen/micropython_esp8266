@@ -22,5 +22,5 @@ except KeyboardInterrupt:
     utils.printInfo("THERMOMETER", "stopped by the user")
     utils.deleteTimers()
 except Exception as e:
-    utils.printWarn("THERMOMETER", "exception during server run: %s" % e)
+    utils.printWarn("THERMOMETER", "exception during mqtt client run: %s" % e)
     machine.reset()

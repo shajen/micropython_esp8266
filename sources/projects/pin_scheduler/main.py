@@ -18,5 +18,5 @@ except KeyboardInterrupt:
     utils.printInfo("PIN_SCHEDULER", "stopped by the user")
     utils.deleteTimers()
 except Exception as e:
-    utils.printWarn("PIN_SCHEDULER", "exception during server run: %s" % e)
+    utils.printWarn("PIN_SCHEDULER", "exception during mqtt client run: %s" % e)
     machine.reboot()

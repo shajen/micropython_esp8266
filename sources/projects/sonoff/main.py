@@ -26,5 +26,5 @@ except KeyboardInterrupt:
     utils.printInfo("SONOFF", "stopped by the user")
     utils.deleteTimers()
 except Exception as e:
-    utils.printWarn("SONOFF", "exception during server run: %s" % e)
+    utils.printWarn("SONOFF", "exception during mqtt client run: %s" % e)
     machine.reset()
