@@ -49,11 +49,6 @@ class TemperatureSensor:
     def upload(self):
         utils.printDebug("TEMPERATURE", "start upload")
         for (serial, temperature) in self.externalTemperatures.items():
-            self.uploadTemperature(serial, temperature)
+            if temperature != 0.0:
+                self.mqttClient.publishTemperature(serial, temperature)
         utils.printDebug("TEMPERATURE", "finish upload")
-
-    def uploadTemperature(self, serial, temperature):
-        if temperature != 0.0:
-            url = "http://monitor.shajen.pl/api/temp/add?serial=%s&temperature=%.2f&key=%s" % (serial, temperature, config.UPLOADER_KEY)
-            utils.httpGet(url)
-            self.mqttClient.publishTemperature(serial, temperature)

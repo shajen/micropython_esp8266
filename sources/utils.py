@@ -7,7 +7,7 @@ import ujson
 
 __LOG_CALLBACK = None
 
-def printColor(verboseLevel, label, message, labelColor):
+def printColor(verboseLevel, label, message, mqtt, labelColor):
     timeColor = '\033[92m' #green
     endc = '\033[0m'
     if config.PRINT_FULL_DATETIME_IN_LOG:
@@ -16,25 +16,25 @@ def printColor(verboseLevel, label, message, labelColor):
     else:
         ms = utime.ticks_ms()
         timeLabel = "% 5d.%03d" % (ms / 1000, ms % 1000)
-    if config.MQTT_PUBLISH_VERBOSE_LEVEL <= verboseLevel and __LOG_CALLBACK:
+    if config.MQTT_PUBLISH_VERBOSE_LEVEL <= verboseLevel and __LOG_CALLBACK and mqtt:
         __LOG_CALLBACK(verboseLevel, label, message)
     if config.VERBOSE_LEVEL <= verboseLevel:
         print("[%s%s%s] [%s%13s%s] %s" % (timeColor, timeLabel, endc, labelColor, label, endc, message))
 
-def printError(label, message):
-    printColor(40, label, message, '\033[91m') #red
+def printError(label, message, mqtt=True):
+    printColor(40, label, message, mqtt, '\033[91m') #red
 
-def printWarn(label, message):
-    printColor(30, label, message, '\033[91m') #red
+def printWarn(label, message, mqtt=True):
+    printColor(30, label, message, mqtt, '\033[91m') #red
 
-def printInfo(label, message):
-    printColor(20, label, message, '\033[38;5;208m') #orange
+def printInfo(label, message, mqtt=True):
+    printColor(20, label, message, mqtt, '\033[38;5;208m') #orange
 
-def printVerbose(label, message):
-    printColor(15, label, message, '\033[93m') #yellow
+def printVerbose(label, message, mqtt=True):
+    printColor(15, label, message, mqtt, '\033[93m') #yellow
 
-def printDebug(label, message):
-    printColor(10, label, message, '\033[93m') #yellow
+def printDebug(label, message, mqtt=True):
+    printColor(10, label, message, mqtt, '\033[93m') #yellow
 
 __TIMERS = []
 def timer():

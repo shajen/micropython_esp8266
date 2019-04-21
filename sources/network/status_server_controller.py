@@ -10,18 +10,15 @@ import utils
 import utime
 
 class StatusServerController():
-    def __init__(self, deviceType, controllers):
+    def __init__(self, mqttClient, deviceType):
         utils.printInfo('STATUS', 'init')
+        self._mqttClient = mqttClient
         self.wlan = network.WLAN()
-        self.controllers = controllers
         self.adc = machine.ADC(1)
         self.deviceType = deviceType
 
-    def name(self):
-        return 'status'
-
-    def process(self, url, params):
-        if url == '/':
+    def process(self, command, data):
+        if command == '/status/':
             data = {}
             gc.collect()
             data['nodemcu'] = {}
@@ -48,12 +45,11 @@ class StatusServerController():
             data['network']['wifi'] = {}
             data['network']['wifi']['ssid'] = ssid
             data['network']['wifi']['rssi'] = rssi
-            data['controllers'] = [c.name() for c in self.controllers] + [self.name()]
             data['device_type'] = self.deviceType
-            return ujson.dumps(data)
-        elif url == '/REBOOT/' or url == '/RESET/':
-            utils.timer().init(period=1000, mode=machine.Timer.PERIODIC, callback=lambda t: machine.reset())
-            return utils.jsonResponse(200, "Board will be restarted in a few seconds")
+            self._mqttClient.publishDevice('status', ujson.dumps(data))
+        elif command == '/reset/':
+            utils.timer().init(period=3000, mode=machine.Timer.PERIODIC, callback=lambda t: machine.reset())
+            self._mqttClient.publishEvent('reset', 'Board will be restarted in a 3 seconds.')
 
     def ssidAndRssi(self):
         wlan = network.WLAN(network.STA_IF)

@@ -3,25 +3,24 @@ import temperature_sensor
 import display
 import machine
 import mqtt_client
-import server
 import status_server_controller
 import utils
 
-mqttClient = mqtt_client.MqttClient()
-utils.__LOG_CALLBACK = lambda level, label, message: mqttClient.publishLog(level, label, message)
+_mqttClient = mqtt_client.MqttClient()
+utils.__LOG_CALLBACK = lambda level, label, message: _mqttClient.publishLog(level, label, message)
 utils.printInfo("THERMOMETER", "boot up")
 utils.createSyncDateTimeTimer()
 _i2c = machine.I2C(scl=machine.Pin(config.I2C_SCL_PIN), sda=machine.Pin(config.I2C_SDA_PIN), freq=400000)
-_temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.DS18B20_PIN), mqttClient)
+_temperature_sensor = temperature_sensor.TemperatureSensor(machine.Pin(config.DS18B20_PIN), _mqttClient)
 _display = display.Display(_i2c, _temperature_sensor, 'Thermometer')
-_statusController = status_server_controller.StatusServerController('Thermometer', [])
-_server = server.Server(config.SERVER_PORT, [_statusController])
+_statusController = status_server_controller.StatusServerController(_mqttClient, 'Thermometer')
+_mqttClient.setControllers([_statusController])
 
 try:
-    _server.run()
+    _mqttClient.run()
 except KeyboardInterrupt:
     utils.printInfo("THERMOMETER", "stopped by the user")
     utils.deleteTimers()
 except Exception as e:
     utils.printWarn("THERMOMETER", "exception during server run: %s" % e)
-    machine.reboot()
+    machine.reset()
