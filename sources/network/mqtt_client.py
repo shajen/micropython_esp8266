@@ -1,6 +1,5 @@
 import config
 import machine
-import ubinascii
 import ujson
 import umqtt.simple
 import utime
@@ -11,8 +10,7 @@ __MAX_CONNECT_PROBES = 5
 class MqttClient():
     def __init__(self):
         self._controllers = []
-        id = machine.unique_id()
-        self._id = 'esp8266_%2X%2X%2X' % (id[2], id[1], id[0])
+        self._id = 'esp8266_%s' % utils.chipId()
         self.client = umqtt.simple.MQTTClient(self._id, config.MQTT_SERVER, port=config.MQTT_PORT, user=config.MQTT_USER, password=config.MQTT_PASSWORD)
         self.client.set_callback(lambda t, m: self._receiveData(t, m))
         self._connect()
