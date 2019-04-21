@@ -1,13 +1,13 @@
 import machine
-import ujson
 import utils
 
 _CONFIG_FILE = "thermostat.data"
 _UPDATE_INTERVAL_MS = 1000
 
 class ThermostatServerController():
-    def __init__(self, temperature_sensor, relay_pin, switch_pin, led_pin):
+    def __init__(self, mqttClient, temperature_sensor, relay_pin, switch_pin, led_pin):
         utils.printInfo('THERMOSTAT', 'init')
+        self._mqttClient = mqttClient
         self._temperature_sensor = temperature_sensor
         self._relay_pin = relay_pin
         self._led_pin = led_pin
@@ -18,30 +18,27 @@ class ThermostatServerController():
         switch_pin.irq(trigger=machine.Pin.IRQ_FALLING | machine.Pin.IRQ_RISING, handler=lambda p: self._switch_clicked(p))
         utils.printInfo('THERMOSTAT', 'config:\n%s' % (self._config))
 
-    def name(self):
-        return 'thermostat'
-
-    def process(self, url, params):
-        if url == '/THERMOSTAT/':
-            return self._get_state()
-        elif url == '/THERMOSTAT/SET/':
+    def process(self, command, data):
+        if command == '/thermostat/status/':
+            self._mqttClient.publishDevice('thermostat/status', self._get_state())
+        elif command == '/thermostat/set/':
             try:
-                if 'IS_HEATER' in params:
-                    self._config['is_heater'] = utils.str2bool(params['IS_HEATER'])
-                if 'DESIRED_TEMPERATURE' in params:
-                    desired_temperature = utils.str2float(params['DESIRED_TEMPERATURE'])
+                if 'is_heater' in data:
+                    self._config['is_heater'] = data['is_heater']
+                if 'desired_temperature' in data:
+                    desired_temperature = data['desired_temperature']
                     if 0.0 <= desired_temperature and desired_temperature <= 100.0:
                         self._config['desired_temperature'] = desired_temperature
-                if 'HYSTERESIS' in params:
-                    hysteresis = utils.str2float(params['HYSTERESIS'])
+                if 'hysteresis' in data:
+                    hysteresis = data['hysteresis']
                     if 0.1 <= hysteresis and hysteresis <= 5.0:
                         self._config['hysteresis'] = hysteresis
             except Exception as e:
                 utils.printWarn('THERMOSTAT', 'exception during process')
                 utils.printWarn('THERMOSTAT', e)
             utils.writeJson(_CONFIG_FILE, self._config)
-            return self._get_state()
-        return None
+            self._mqttClient.publishEvent('thermostat/state', 'New state has been set.')
+            self._mqttClient.publishDevice('thermostat/status', self._get_state())
 
     def _switch_clicked(self, pin):
         self._config['switch_force_working_mode'] = (pin.value() + 1) % 2
@@ -64,7 +61,7 @@ class ThermostatServerController():
         data = self._config
         data['current_temperature'] = temperature
         data['is_working'] = self._relay_pin.value()
-        return ujson.dumps({'status': 0, 'data' : data})
+        return data
 
     def _default_config(self):
         return {

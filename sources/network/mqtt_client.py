@@ -30,7 +30,8 @@ class MqttClient():
                 utils.printInfo('MQTT', 'connection successful', False)
                 break
 
-    def _publish(self, topic, message):
+    def _publish(self, topic, data):
+        message = ujson.dumps(data)
         try:
             try:
                 self.client.publish(topic, message)
@@ -40,12 +41,12 @@ class MqttClient():
         except OSError as e:
             utils.printWarn('MQTT', 'exception during publish: %s' % e, False)
 
-    def publishDevice(self, topic, message):
-        self._publish("/device/%s/%s" % (self._id, topic), message)
+    def publishDevice(self, topic, data):
+        self._publish("/device/%s/%s" % (self._id, topic), data)
 
     def _publishSensor(self, type, id, value):
         data = {"value":value}
-        self.publishDevice('sensor/%s/%s' % (type, id), ujson.dumps(data))
+        self.publishDevice('sensor/%s/%s' % (type, id), data)
 
     def publishTemperature(self, id, value):
         self._publishSensor('temperature', id, value)
@@ -62,13 +63,13 @@ class MqttClient():
             "label":label,
             "message":message,
         }
-        self.publishDevice('log', ujson.dumps(data))
+        self.publishDevice('log', data)
 
     def publishEvent(self, type, message):
         data = {
             'message':message
         }
-        self.publishDevice('event/%s' % type, ujson.dumps(data))
+        self.publishDevice('event/%s' % type, data)
 
     def _receiveData(self, topic, message):
         topic = topic.decode('utf-8')
@@ -83,8 +84,13 @@ class MqttClient():
         if not command.endswith('/'):
             command = command + '/'
 
+        try:
+            data = ujson.loads(message)
+        except Exception as e:
+            utils.printWarn('MQTT', 'exception during json loads: %s' % e, False)
+            data = message
         for c in self._controllers:
-            c.process(command, message)
+            c.process(command, data)
 
     def setControllers(self, controllers):
         self._controllers = controllers
