@@ -4,7 +4,6 @@ import machine
 import network
 import sys
 import ubinascii
-import ujson
 import usocket
 import utils
 import utime
@@ -46,7 +45,7 @@ class StatusServerController():
             data['network']['wifi']['ssid'] = ssid
             data['network']['wifi']['rssi'] = rssi
             data['device_type'] = self.deviceType
-            self._mqttClient.publishDevice('status', ujson.dumps(data))
+            self._mqttClient.publishDevice('status', data)
         elif command == '/reset/':
             utils.timer().init(period=3000, mode=machine.Timer.PERIODIC, callback=lambda t: machine.reset())
             self._mqttClient.publishEvent('reset', 'Board will be restarted in a 3 seconds.')
