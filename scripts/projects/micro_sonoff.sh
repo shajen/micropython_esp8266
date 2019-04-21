@@ -9,7 +9,7 @@ eval $FLASH_COMMAND boot.py
 eval $FLASH_COMMAND projects/sonoff/main.py
 eval $FLASH_COMMAND $ROOT_PATH/config
 eval $FLASH_COMMAND utils.py
-eval $FLASH_COMMAND network/server.py
+eval $FLASH_COMMAND network/mqtt_client.py
 eval $FLASH_COMMAND network/sonoff_server_controller.py
 eval $FLASH_COMMAND network/status_server_controller.py
 
