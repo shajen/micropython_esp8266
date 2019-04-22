@@ -9,6 +9,7 @@ __MAX_CONNECT_PROBES = 5
 
 class MqttClient():
     def __init__(self):
+        utils.printInfo('MQTT', 'init', False)
         self._controllers = []
         self._id = 'esp8266_%s' % utils.chipId()
         self.client = umqtt.simple.MQTTClient(self._id, config.MQTT_SERVER, port=config.MQTT_PORT, user=config.MQTT_USER, password=config.MQTT_PASSWORD)
@@ -67,6 +68,9 @@ class MqttClient():
     def _receiveData(self, topic, message):
         topic = topic.decode('utf-8').lower()
         message = message.decode('utf-8').lower()
+        utils.printDebug('MQTT', 'received new message', False)
+        utils.printDebug('MQTT', 'topic: %s' % topic, False)
+        utils.printDebug('MQTT', 'message: %s' % message, False)
 
         if not topic.endswith('/'):
             topic = topic + '/'
