@@ -8,10 +8,10 @@ _UPDATE_INTERVAL_MS = 1000
 _UPLOAD_INTERVAL_MS = 60000
 
 class TemperatureSensor:
-    def __init__(self, pin, mqttClient):
+    def __init__(self, mqttClient, pin):
         utils.printInfo('TEMPERATURE', 'init')
-        self.dallas = ds18x20.DS18X20(onewire.OneWire(pin))
         self.mqttClient = mqttClient
+        self.dallas = ds18x20.DS18X20(onewire.OneWire(pin))
         self.externalTemperatures = {}
         self._updateTimer = utils.timer()
         self._uploadTimer = utils.timer()
