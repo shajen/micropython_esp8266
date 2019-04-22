@@ -50,5 +50,5 @@ class TemperatureSensor:
         utils.printDebug("TEMPERATURE", "start upload")
         for (serial, temperature) in self.externalTemperatures.items():
             if temperature != 0.0:
-                self.mqttClient.publishTemperature(serial, temperature)
+                self.mqttClient.publishSensor('temperature', serial, temperature)
         utils.printDebug("TEMPERATURE", "finish upload")

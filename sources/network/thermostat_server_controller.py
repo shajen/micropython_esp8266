@@ -19,8 +19,8 @@ class ThermostatServerController():
         utils.printInfo('THERMOSTAT', 'config:\n%s' % (self._config))
 
     def process(self, command, data):
-        if command == '/thermostat/status/':
-            self._mqttClient.publishDevice('thermostat/status', self._get_state())
+        if command == '/thermostat/state/':
+            self._mqttClient.publishStatus('thermostat/state', self._get_state())
         elif command == '/thermostat/set/':
             try:
                 if 'is_heater' in data:
@@ -38,7 +38,7 @@ class ThermostatServerController():
                 utils.printWarn('THERMOSTAT', e)
             utils.writeJson(_CONFIG_FILE, self._config)
             self._mqttClient.publishEvent('thermostat/state', 'New state has been set.')
-            self._mqttClient.publishDevice('thermostat/status', self._get_state())
+            self._mqttClient.publishStatus('thermostat/state', self._get_state())
 
     def _switch_clicked(self, pin):
         self._config['switch_force_working_mode'] = (pin.value() + 1) % 2

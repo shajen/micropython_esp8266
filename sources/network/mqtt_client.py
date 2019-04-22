@@ -14,14 +14,13 @@ class MqttClient():
         self.client = umqtt.simple.MQTTClient(self._id, config.MQTT_SERVER, port=config.MQTT_PORT, user=config.MQTT_USER, password=config.MQTT_PASSWORD)
         self.client.set_callback(lambda t, m: self._receiveData(t, m))
         self._connect()
-        self.publishDevice('hello', '')
 
     def _connect(self):
         for i in range(0, __MAX_CONNECT_PROBES):
             try:
                 self.client.connect()
-                self.client.subscribe('/device/%s/api/#' % self._id)
-                self.client.subscribe('/devices/api/#')
+                self.client.subscribe('/device/%s/query/#' % self._id)
+                self.client.subscribe('/devices/query/#')
             except OSError as e:
                 utils.printWarn('MQTT', 'exception during connection: %s' % e, False)
             finally:
@@ -29,6 +28,7 @@ class MqttClient():
                 break
 
     def _publish(self, topic, data):
+        topic = "/device/%s/%s" % (self._id, topic)
         message = ujson.dumps(data)
         try:
             try:
@@ -39,15 +39,12 @@ class MqttClient():
         except OSError as e:
             utils.printWarn('MQTT', 'exception during publish: %s' % e, False)
 
-    def publishDevice(self, topic, data):
-        self._publish("/device/%s/%s" % (self._id, topic), data)
+    def publishStatus(self, topic, data):
+        self._publish('status/%s' % topic, data)
 
-    def _publishSensor(self, type, id, value):
+    def publishSensor(self, type, id, value):
         data = {"value":value}
-        self.publishDevice('sensor/%s/%s' % (type, id), data)
-
-    def publishTemperature(self, id, value):
-        self._publishSensor('temperature', id, value)
+        self._publish('sensor/%s/%s' % (type, id), data)
 
     def publishLog(self, level, label, message):
         year, month, day, _, hour, minute, second, ms = machine.RTC().datetime()
@@ -61,26 +58,27 @@ class MqttClient():
             "label":label,
             "message":message,
         }
-        self.publishDevice('log', data)
+        self._publish('log', data)
 
     def publishEvent(self, type, message):
-        data = {
-            'message':message
-        }
-        self.publishDevice('event/%s' % type, data)
+        data = {'message':message}
+        self._publish('event/%s' % type, data)
 
     def _receiveData(self, topic, message):
-        topic = topic.decode('utf-8')
-        message = message.decode('utf-8')
-        if topic.startswith('/devices/api/'):
-            command = topic[12:]
-        elif topic.startswith('/device/%s/api/' % self._id):
-            command = topic[(12 + len(self._id)):]
+        topic = topic.decode('utf-8').lower()
+        message = message.decode('utf-8').lower()
+
+        if not topic.endswith('/'):
+            topic = topic + '/'
+        if not topic.startswith('/'):
+            topic = '/' + topic
+
+        if topic.startswith('/devices/query/'):
+            command = topic[14:]
+        elif topic.startswith('/device/%s/query/' % self._id):
+            command = topic[(14 + len(self._id)):]
         else:
             return
-
-        if not command.endswith('/'):
-            command = command + '/'
 
         try:
             data = ujson.loads(message)

@@ -22,8 +22,8 @@ class PinServerController():
             pin.value(1 if mode == 'on' else 0)
 
     def process(self, command, data):
-        if command == '/gpio/status/':
-            self._mqttClient.publishDevice('gpio/status', self.getState())
+        if command == '/gpio/state/':
+            self._mqttClient.publishStatus('gpio/state', self.getState())
         elif command == '/gpio/set/':
             try:
                 if 'pin' in data:
@@ -32,7 +32,7 @@ class PinServerController():
                     for pin in self.pins:
                         self.processPin(pin, data['mode'])
                 self._mqttClient.publishEvent('gpio/state', 'New state has been set.')
-                self._mqttClient.publishDevice('gpio/status', self.getState())
+                self._mqttClient.publishStatus('gpio/state', self.getState())
             except Exception as e:
                 utils.printWarn('PIN', 'exception during process')
                 utils.printWarn('PIN', e)

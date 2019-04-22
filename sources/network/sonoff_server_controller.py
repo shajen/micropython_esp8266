@@ -48,8 +48,8 @@ class SonoffServerController():
             l.value((value + 1) % 2)
 
     def process(self, command, data):
-        if command == '/gpio/status/':
-            self._mqttClient.publishDevice('gpio/status', self.getState())
+        if command == '/gpio/state/':
+            self._mqttClient.publishStatus('gpio/state', self.getState())
         elif command == '/gpio/set/':
             try:
                 if 'pin' in data:
@@ -58,7 +58,7 @@ class SonoffServerController():
                     for switch in self.switches:
                         self.processSwitch(switch, data['mode'])
                 self._mqttClient.publishEvent('gpio/state', 'New state has been set.')
-                self._mqttClient.publishDevice('gpio/status', self.getState())
+                self._mqttClient.publishStatus('gpio/state', self.getState())
             except Exception as e:
                 utils.printWarn('SONOFF', 'exception during process')
                 utils.printWarn('SONOFF', e)

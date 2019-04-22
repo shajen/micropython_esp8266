@@ -118,12 +118,3 @@ def readJson(file):
     except:
         printDebug("JSON", "read json from {} failed".format(file))
         return None
-
-def jsonResponse(status, message):
-    return ujson.dumps({"status": status, "message": message})
-
-def str2bool(v):
-    return v.lower() in ("yes", "true", "t", "1")
-
-def str2float(v):
-    return float(v)
