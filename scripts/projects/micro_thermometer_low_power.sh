@@ -9,7 +9,7 @@ eval $FLASH_COMMAND boot.py
 eval $FLASH_COMMAND projects/thermometer_low_power/main.py
 eval $FLASH_COMMAND $ROOT_PATH/config
 eval $FLASH_COMMAND utils.py
-eval $FLASH_COMMAND network/server.py
+eval $FLASH_COMMAND network/mqtt_client.py
 eval $FLASH_COMMAND hardware/temperature_sensor.py
 eval $FLASH_COMMAND hardware/display.py
 eval $FLASH_COMMAND hardware/lcd_i2c.py
