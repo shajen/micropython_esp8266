@@ -106,15 +106,15 @@ def writeJson(file, json):
     f = open(file, "w")
     f.write(ujson.dumps(json))
     f.close()
-    printDebug("JSON", "write json to {} success".format(file))
+    printDebug("JSON", "write json to %s success" % file)
 
 def readJson(file):
     try:
         f = open(file, "r")
         data = f.read()
         f.close()
-        printDebug("JSON", "read json from {} success".format(file))
+        printDebug("JSON", "read json from %s success" % file)
         return ujson.loads(data)
     except:
-        printDebug("JSON", "read json from {} failed".format(file))
+        printDebug("JSON", "read json from % failed" % file)
         return None
