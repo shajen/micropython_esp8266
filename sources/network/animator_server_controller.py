@@ -15,7 +15,8 @@ _MAX_LEDS = 180
 _CONFIG_FILE = "animator.data"
 
 class AnimatorServerController():
-    def __init__(self, pin):
+    def __init__(self, mqttClient, pin):
+        self._mqttClient = mqttClient
         self.pin = pin
         self.resetConfig()
         self.config = utils.readJson(_CONFIG_FILE) or self.config
@@ -30,9 +31,6 @@ class AnimatorServerController():
         self.forceRefreshLeds = 0
         self.timer = utils.timer()
         self.timer.init(period=1, mode=machine.Timer.PERIODIC, callback=lambda t: self.tick())
-
-    def name(self):
-        return 'animator'
 
     def tick(self):
         if self.config['powered_on'] == 0:
@@ -64,51 +62,44 @@ class AnimatorServerController():
 
         self.tickCount = (self.tickCount + 1) % _MAX_SPEED
 
-    def process(self, url, params):
-        if url == '/ANIMATOR/':
-            return ujson.dumps(self.config)
-        elif url == '/ANIMATOR/SET/' and "KEY" in params and "VALUE" in params:
-            keys = params['KEY'].split(',')
-            values = params['VALUE'].split(',')
-            for i in range(len(keys)):
-                self.setValue(keys[i], values[i])
+    def process(self, command, data):
+        if command == '/animator/state/':
+            self._mqttClient.publishStatus('animator/state', self.config)
+        elif command == '/animator/set/':
+            self.setValue(data)
             utils.writeJson(_CONFIG_FILE, self.config)
-            return ujson.dumps(self.config)
-        elif url == '/ANIMATOR/RESET/':
+            self._mqttClient.publishEvent('animator/state', 'New state has been set.')
+            self._mqttClient.publishStatus('animator/state', self.config)
+        elif command == '/animator/reset/':
             self.resetConfig()
             utils.writeJson(_CONFIG_FILE, self.config)
-            return ujson.dumps(self.config)
-        return None
+            self._mqttClient.publishEvent('animator/state', 'New state has been set.')
+            self._mqttClient.publishStatus('animator/state', self.config)
 
-    def setValue(self, key, value):
-        utils.printDebug('ANIMATOR', 'SET %s=%s' %(key, value))
-        try:
-            value = int(value)
-        except:
-            pass
-        if key == 'SPEED' and value in range(1, _MAX_SPEED + 1):
-            self.config['speed'] = value
-        elif key == 'ANIMATION' and value in range(-1, len(self.animations)):
-            self.config['animation'] = value
-            if value == -1:
+    def setValue(self, data):
+        if 'speed' in data and data['speed'] in range(1, _MAX_SPEED + 1):
+            self.config['speed'] = data['speed']
+        elif 'animation' in data and data['animation'] in range(-1, len(self.animations)):
+            self.config['animation'] = data['animation']
+            if data['animation'] == -1:
                 self.config['current_animation'] = uos.urandom(1)[0] % len(self.animations)
             else:
-                self.config['current_animation'] = value
-        elif key == 'LEDS' and 2 <= value and value <= _MAX_LEDS and self.config['leds'] != value:
+                self.config['current_animation'] = data['animation']
+        elif 'leds' in data and 2 <= data['leds'] and data['leds'] <= _MAX_LEDS and self.config['leds'] != data['leds']:
             tmp = self.config['leds']
-            self.config['leds'] = value
+            self.config['leds'] = data['leds']
             self.forceRefreshLeds = tmp
-        elif key == 'SECONDS_PER_ANIMATION' and value > 0:
-            self.config['seconds_per_animation'] = value
-        elif key == 'POWERED_ON' and (value == 0 or value == 1):
-            self.config['powered_on'] = value
+        elif 'seconds_per_animation' in data and data['seconds_per_animation'] > 0:
+            self.config['seconds_per_animation'] = data['seconds_per_animation']
+        elif 'powered_on' in data and (data['powered_on'] == 0 or data['powered_on'] == 1):
+            self.config['powered_on'] = data['powered_on']
             self.forceRefreshColor = True
             self.powerOffIfNeeded()
-        elif key == 'USE_COLOR' and (value == 0 or value == 1):
-            self.config['use_color'] = value
+        elif 'use_color' in data and (data['use_color'] == 0 or data['use_color'] == 1):
+            self.config['use_color'] = data['use_color']
             self.forceRefreshColor = True
-        elif key == 'COLOR' and ure.match("^[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]$", value):
-            self.config['color'] = value
+        elif 'color' in data and ure.match("^[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]$", data['color']):
+            self.config['color'] = data['color']
             self.forceRefreshColor = True
 
     def resetConfig(self):
