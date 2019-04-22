@@ -3,7 +3,7 @@ import machine
 import utils
 import vl53l0x
 
-utils.printInfo("NODEMCU", "radar boot up")
+utils.printInfo("RADAR", "boot up")
 
 i2c = machine.I2C(scl=machine.Pin(config.I2C_SCL_PIN), sda=machine.Pin(config.I2C_SDA_PIN), freq=400000)
 
