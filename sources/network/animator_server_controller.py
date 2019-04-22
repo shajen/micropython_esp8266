@@ -4,7 +4,6 @@ import machine
 import rainbow_animation
 import strip_animation
 import ubinascii
-import ujson
 import uos
 import ure
 import utils
