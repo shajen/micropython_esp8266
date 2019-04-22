@@ -11,9 +11,9 @@ import utime
 
 _MAX_SPEED = 100
 _MAX_LEDS = 180
-_CONFIG_FILE = "animator.data"
+_CONFIG_FILE = "WS2812.data"
 
-class AnimatorServerController():
+class Ws2812ServerController():
     def __init__(self, mqttClient, pin):
         self._mqttClient = mqttClient
         self.pin = pin
@@ -62,18 +62,18 @@ class AnimatorServerController():
         self.tickCount = (self.tickCount + 1) % _MAX_SPEED
 
     def process(self, command, data):
-        if command == '/animator/state/':
-            self._mqttClient.publishStatus('animator/state', self.config)
-        elif command == '/animator/set/':
+        if command == '/ws2812/state/':
+            self._mqttClient.publishStatus('ws2812/state', self.config)
+        elif command == '/ws2812/set/':
             self.setValue(data)
             utils.writeJson(_CONFIG_FILE, self.config)
-            self._mqttClient.publishEvent('animator/state', 'New state has been set.')
-            self._mqttClient.publishStatus('animator/state', self.config)
-        elif command == '/animator/reset/':
+            self._mqttClient.publishEvent('ws2812/state', 'New state has been set.')
+            self._mqttClient.publishStatus('ws2812/state', self.config)
+        elif command == '/ws2812/reset/':
             self.resetConfig()
             utils.writeJson(_CONFIG_FILE, self.config)
-            self._mqttClient.publishEvent('animator/state', 'New state has been set.')
-            self._mqttClient.publishStatus('animator/state', self.config)
+            self._mqttClient.publishEvent('ws2812/state', 'New state has been set.')
+            self._mqttClient.publishStatus('ws2812/state', self.config)
 
     def setValue(self, data):
         if 'speed' in data and data['speed'] in range(1, _MAX_SPEED + 1):

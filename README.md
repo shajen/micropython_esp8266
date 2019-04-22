@@ -116,7 +116,7 @@ All projects listed in [sources/projects](sources/projects) has matching script 
 
 Choose any project and run scripts to deploy into the board. For example to run WS2812B leds project run command:
 ```
-scripts/projects/micro_animator.sh
+scripts/projects/micro_ws2812.sh
 ```
 
 ## Contributing
