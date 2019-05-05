@@ -51,7 +51,12 @@ class SegmentalDisplay():
     def update(self):
         (years, months, days, hours, minutes, seconds) = self._time
         lines = []
-        lines.append(' '.join('%.1f' % t for t in self._temperatures))
+        if len(self._temperatures) >= 4:
+            lines.append(' '.join('%.0f' % t for t in self._temperatures))
+        elif len(self._temperatures) >= 3:
+            lines.append(' '.join('%.1f' % t for t in self._temperatures))
+        else:
+            lines.append(' '.join('%.2f' % t for t in self._temperatures))
         lines.append('time %02d:%02d:%02d' % (hours, minutes, seconds))
         lines.append('free %d, WiFi %i' % (self._freeMemory, self._wifiIsConnected))
         lines.append('up %02d:%02d:%02d:%02d' % self._uptime)
