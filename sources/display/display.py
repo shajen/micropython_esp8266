@@ -1,7 +1,6 @@
 import gc
 import machine
 import network
-import segmental_display
 import time
 import utils
 import utime
@@ -17,8 +16,13 @@ class Display():
 
         for address in i2c.scan():
             if address == 0x23:
+                import segmental_display
                 self._displays.append(segmental_display.SegmentalDisplay(i2c, address, 20, 4))
+            elif address == 0x3C:
+                import oled_display
+                self._displays.append(oled_display.OledDisplay(i2c, address, 128, 64))
             else:
+                import segmental_display
                 self._displays.append(segmental_display.SegmentalDisplay(i2c, address, 16, 2))
 
         (ip, _, _, _) = network.WLAN(network.STA_IF).ifconfig()
@@ -27,8 +31,9 @@ class Display():
             display.setIp(ip)
             display.showInitialMessage()
 
-        self._updateTimer = utils.timer()
-        self._updateTimer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
+        if self._displays:
+            self._updateTimer = utils.timer()
+            self._updateTimer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
 
     def _uptime(self):
         s = int(time.ticks_ms() / 1000)
