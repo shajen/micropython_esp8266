@@ -12,6 +12,7 @@ class MqttClient():
         utils.printInfo('MQTT', 'init', False)
         self._controllers = []
         self._id = 'esp8266_%s' % utils.chipId()
+        utils.printInfo('MQTT', 'client id: %s' % (self._id), False)
         self.client = umqtt.simple.MQTTClient(self._id, config.MQTT_SERVER, port=config.MQTT_PORT, user=config.MQTT_USER, password=config.MQTT_PASSWORD)
         self.client.set_callback(lambda t, m: self._receiveData(t, m))
         self._connect()

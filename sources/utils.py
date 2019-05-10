@@ -76,6 +76,7 @@ def syncDatetime():
     return False
 
 def createSyncDateTimeTimer(interval_ms = 600000, sync_on_start = True):
+    printInfo('NTP', 'auto sync every %d seconds' % (interval_ms / 1000))
     t = timer()
     t.init(period=interval_ms, mode=machine.Timer.PERIODIC, callback=lambda t: syncDatetime())
     if sync_on_start:
