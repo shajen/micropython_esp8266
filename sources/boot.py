@@ -14,6 +14,20 @@ def detectSoftReboot():
     if utime.ticks_ms() >= 1000:
         machine.reset()
 
+def detectReset():
+    printInfo('reset cause %d' % machine.reset_cause())
+    rtc = machine.RTC()
+    printInfo('RTC memory: %s' % rtc.memory().decode('utf-8'))
+    if machine.reset_cause() == 6:
+        try:
+            resets_count = int(rtc.memory().decode('utf-8'))
+        except:
+            resets_count = 0
+        resets_count = resets_count + 1
+        rtc.memory(str(resets_count))
+    else:
+        rtc.memory(str(0))
+
 def preBoot():
     try:
         import pre_boot
@@ -63,8 +77,8 @@ def isConnected():
 
 print()
 printInfo('shajen development - micropython')
-printInfo('reset cause %d' % machine.reset_cause())
 detectSoftReboot()
+detectReset()
 preBoot()
 waitForConnection(10000)
 if not isConnected():
