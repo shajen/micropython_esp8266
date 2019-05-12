@@ -58,11 +58,16 @@ def waitForConnection(timeoutMs):
         printInfo('wlan connection succeeded')
     printInfo('finish waitForConnection')
 
+def isConnected():
+    return network.WLAN(network.STA_IF).isconnected()
+
 print()
 printInfo('shajen development - micropython')
 printInfo('reset cause %d' % machine.reset_cause())
 detectSoftReboot()
 preBoot()
-tryConnect(10000)
 waitForConnection(10000)
+if not isConnected():
+    tryConnect(10000)
+    waitForConnection(10000)
 webrepl.start()
