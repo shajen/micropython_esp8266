@@ -5,10 +5,9 @@ import onewire
 import utils
 
 _UPDATE_INTERVAL_MS = 1000
-_UPLOAD_INTERVAL_MS = 60000
 
 class TemperatureSensor:
-    def __init__(self, mqttClient, pin):
+    def __init__(self, mqttClient, pin, upload_interval_ms):
         utils.printInfo('TEMPERATURE', 'init')
         self.mqttClient = mqttClient
         self.dallas = ds18x20.DS18X20(onewire.OneWire(pin))
@@ -17,7 +16,7 @@ class TemperatureSensor:
         self._uploadTimer = utils.timer()
         self.update()
         self._updateTimer.init(period=_UPDATE_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.update())
-        self._uploadTimer.init(period=_UPLOAD_INTERVAL_MS, mode=machine.Timer.PERIODIC, callback=lambda t: self.upload())
+        self._uploadTimer.init(period=upload_interval_ms, mode=machine.Timer.PERIODIC, callback=lambda t: self.upload())
 
     def getExternalTemperatures(self):
         return list(self.externalTemperatures.values())

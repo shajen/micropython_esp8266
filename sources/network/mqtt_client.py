@@ -29,15 +29,15 @@ class MqttClient():
                 utils.printInfo('MQTT', 'connection successful', False)
                 break
 
-    def _publish(self, topic, data):
+    def _publish(self, topic, data, qos=0):
         topic = "/device/%s/%s" % (self._id, topic)
         message = ujson.dumps(data)
         try:
             try:
-                self.client.publish(topic, message)
+                self.client.publish(topic, message, False, qos)
             except OSError as e:
                 self._connect()
-                self.client.publish(topic, message)
+                self.client.publish(topic, message, False, qos)
         except OSError as e:
             utils.printWarn('MQTT', 'exception during publish: %s' % e, False)
 
@@ -46,7 +46,7 @@ class MqttClient():
 
     def publishSensor(self, type, id, value):
         data = {"value":value}
-        self._publish('sensor/%s/%s' % (type, id), data)
+        self._publish('sensor/%s/%s' % (type, id), data, 1)
 
     def publishLog(self, level, label, message):
         year, month, day, _, hour, minute, second, ms = machine.RTC().datetime()

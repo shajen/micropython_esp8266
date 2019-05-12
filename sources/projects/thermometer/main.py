@@ -11,7 +11,7 @@ utils.__LOG_CALLBACK = lambda level, label, message: _mqttClient.publishLog(leve
 utils.printInfo("THERMOMETER", "boot up")
 utils.createSyncDateTimeTimer()
 _i2c = machine.I2C(scl=machine.Pin(config.I2C_SCL_PIN), sda=machine.Pin(config.I2C_SDA_PIN), freq=400000)
-_temperature_sensor = temperature_sensor.TemperatureSensor(_mqttClient, machine.Pin(config.DS18B20_PIN))
+_temperature_sensor = temperature_sensor.TemperatureSensor(_mqttClient, machine.Pin(config.DS18B20_PIN), config.UPLOAD_SENSORS_INTERVAL_MS)
 _display = display.Display(_i2c, _temperature_sensor, 'Thermometer')
 _statusController = status_server_controller.StatusServerController(_mqttClient, 'Thermometer')
 _mqttClient.setControllers([_statusController])
