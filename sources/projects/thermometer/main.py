@@ -22,6 +22,8 @@ if config.THERMOMETER_LOW_POWER_MODE and int(_rtc.memory().decode('utf-8')) <= 1
 else:
     _rtc.memory('0')
     utils.createSyncDateTimeTimer()
+    if config.THERMOMETER_LOW_POWER_MODE:
+        utils.createBlinkPinTimer(config.LED_STATUS_PIN, 500, 100, True)
     _i2c = machine.I2C(scl=machine.Pin(config.I2C_SCL_PIN), sda=machine.Pin(config.I2C_SDA_PIN), freq=400000)
     _display = display.Display(_i2c, _temperature_sensor, 'Thermometer')
     _statusController = status_server_controller.StatusServerController(_mqttClient, 'Thermometer')

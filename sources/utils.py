@@ -83,6 +83,22 @@ def createSyncDateTimeTimer(interval_ms = 600000, sync_on_start = True):
         syncDatetime()
     return t
 
+def createBlinkPinTimer(pin, low_state_interval_ms = 1000, high_state_interval_ms = 1000, reverse_states = False):
+    printInfo('BLINK', 'blink pin %d, low %d, high %d ms, reverse: %d' % (pin, low_state_interval_ms, high_state_interval_ms, reverse_states))
+    if reverse_states:
+        low_state_interval_ms, high_state_interval_ms = high_state_interval_ms, low_state_interval_ms
+    p = machine.Pin(pin, machine.Pin.OUT)
+    def callback(t):
+        if p.value():
+            t.init(period=low_state_interval_ms, mode=machine.Timer.ONE_SHOT, callback=callback)
+            p.value(0)
+        else:
+            t.init(period=high_state_interval_ms, mode=machine.Timer.ONE_SHOT, callback=callback)
+            p.value(1)
+    t = timer()
+    callback(t)
+    return t
+
 def httpGet(url):
     try:
         printDebug('HTTP', 'start GET %s' % url)
